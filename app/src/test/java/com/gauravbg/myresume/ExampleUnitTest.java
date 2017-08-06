@@ -1,4 +1,4 @@
-package myresume.gauravbg.com.myresume;
+package com.gauravbg.myresume;
 
 import org.junit.Test;
 

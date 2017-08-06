@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "99263569265",
+    "firebase_url": "https://myresume-94eda.firebaseio.com",
+    "project_id": "myresume-94eda",
+    "storage_bucket": "myresume-94eda.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:99263569265:android:3fe9c398406bbade",
+        "android_client_info": {
+          "package_name": "com.gauravbg.myresume"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "99263569265-kecujrofr1ks4sagbrng1p3khlbrgp2f.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.gauravbg.myresume",
+            "certificate_hash": "f89ea3b8b065cc172e8e1f929c57506531fa7844"
+          }
+        },
+        {
+          "client_id": "99263569265-12gdnrcet1r8vpnoishvhpbqkgvvbja2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDqQxwTzbOiC_uXrblmuyQAlrIjsklBxD0"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "99263569265-12gdnrcet1r8vpnoishvhpbqkgvvbja2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
