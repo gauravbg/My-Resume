@@ -1,11 +1,16 @@
 package com.gauravbg.myresume.entities;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by gauravbg on 8/6/17.
  */
 
-public class Profile {
+public class Profile implements MyResumeEntity{
 
+
+    private String id;
     private String username;
     private String name;
     private String title;
@@ -13,7 +18,10 @@ public class Profile {
     private String phoneNumber;
     private String alternatePhoneNumber;
     private String address;
+    private List<String> pages = new ArrayList<>();
 
+    public Profile() {
+    }
 
     public Profile(String username) {
         this.setUsername(username);
@@ -74,5 +82,27 @@ public class Profile {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public List<String> getPages() {
+        return pages;
+    }
+
+    public void setPages(List<String> pages) {
+        this.pages = pages;
+    }
+
+    @Override
+    public String getEntityType() {
+        return MyResumeEntity.PROFILE_TYPE;
+
     }
 }
