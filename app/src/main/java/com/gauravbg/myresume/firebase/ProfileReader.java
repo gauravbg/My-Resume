@@ -3,6 +3,7 @@ package com.gauravbg.myresume.firebase;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.bumptech.glide.Glide;
 import com.gauravbg.myresume.entities.Content;
 import com.gauravbg.myresume.entities.MyResumeEntity;
 import com.gauravbg.myresume.entities.Page;
@@ -12,11 +13,15 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * Created by gauravbg on 10/1/17.
@@ -24,8 +29,9 @@ import java.util.Map;
 
 public class ProfileReader {
 
-    private final DatabaseReference profileRef = FirebaseDBManager.getDBReference(FirebaseDBManager.DBTable.PROFILES);
-    private final DatabaseReference pagesRef = FirebaseDBManager.getDBReference(FirebaseDBManager.DBTable.PAGES);
+    private final DatabaseReference profileRef = FirebaseManager.getDBReference(FirebaseManager.DBTable.PROFILES);
+    private final DatabaseReference pagesRef = FirebaseManager.getDBReference(FirebaseManager.DBTable.PAGES);
+    private final FirebaseStorage storage =  FirebaseManager.getFirebaseStorage();
     private EntityFetchListener listener;
     private final String LOG = getClass().getCanonicalName();
     private HashMap<String, MyResumeEntity> entities = new HashMap<>();
@@ -51,8 +57,9 @@ public class ProfileReader {
                 }
                 if(profile != null)
                     profile.setPages(pageIds);
-                if(listener != null)
+                if(listener != null) {
                     listener.onEntityFetched(entities);
+                }
             }
         }
 
@@ -62,6 +69,8 @@ public class ProfileReader {
                 listener.onEntityFetchFailed(databaseError);
             }
         }
+
+
     };
 
 
@@ -97,6 +106,13 @@ public class ProfileReader {
             }
         });
 
+    }
+
+
+    public void fetchImage(CircleImageView profileIV, String url) {
+
+        StorageReference imageRef = storage.getReferenceFromUrl(url);
+        Glide.with(profileIV.getContext()).load(url).into(profileIV);
     }
 
     private void fetchPage(String pageId) {
@@ -145,6 +161,7 @@ public class ProfileReader {
                         case "phoneNumber": profile.setPhoneNumber(value); break;
                         case "title": profile.setTitle(value); break;
                         case "username": profile.setUsername(value); break;
+                        case "imageUrl": profile.setImageUrl(value); break;
                         default: break;
 
                     }
@@ -281,6 +298,7 @@ public class ProfileReader {
         void onEntityFetched(Map<String, MyResumeEntity> entities);
 
         void onEntityFetchFailed(DatabaseError databaseError);
+
     }
 
 

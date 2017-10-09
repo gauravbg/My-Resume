@@ -14,8 +14,8 @@ import java.util.List;
 
 public class ProfileWriter {
 
-    private final DatabaseReference profileRef = FirebaseDBManager.getDBReference(FirebaseDBManager.DBTable.PROFILES);
-    private final DatabaseReference pagesRef = FirebaseDBManager.getDBReference(FirebaseDBManager.DBTable.PAGES);
+    private final DatabaseReference profileRef = FirebaseManager.getDBReference(FirebaseManager.DBTable.PROFILES);
+    private final DatabaseReference pagesRef = FirebaseManager.getDBReference(FirebaseManager.DBTable.PAGES);
     private EntitySaveListener listener;
     private final String LOG = getClass().getCanonicalName();
     private int saveEntityCount = 0;

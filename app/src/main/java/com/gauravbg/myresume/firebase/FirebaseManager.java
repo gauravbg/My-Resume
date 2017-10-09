@@ -2,20 +2,24 @@ package com.gauravbg.myresume.firebase;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
-import static com.gauravbg.myresume.firebase.FirebaseDBManager.DBTable.CONTENT;
-import static com.gauravbg.myresume.firebase.FirebaseDBManager.DBTable.PAGES;
-import static com.gauravbg.myresume.firebase.FirebaseDBManager.DBTable.PROFILES;
-import static com.gauravbg.myresume.firebase.FirebaseDBManager.DBTable.SECTIONS;
+import static com.gauravbg.myresume.firebase.FirebaseManager.DBTable.CONTENT;
+import static com.gauravbg.myresume.firebase.FirebaseManager.DBTable.PAGES;
+import static com.gauravbg.myresume.firebase.FirebaseManager.DBTable.PROFILES;
+import static com.gauravbg.myresume.firebase.FirebaseManager.DBTable.SECTIONS;
 
 /**
  * Created by gauravbg on 8/6/17.
  */
 
-public class FirebaseDBManager {
+public class FirebaseManager {
 
     private static FirebaseDatabase mFirebaseDB;
     private static DatabaseReference mProfilesReference;
+
+    public static final String IMAGE_FOLDER_PATH = "Profile_Images";
 
 
     public enum DBTable {
@@ -38,7 +42,7 @@ public class FirebaseDBManager {
     }
 
 
-    private FirebaseDBManager() {
+    private FirebaseManager() {
         //
     }
 
@@ -48,6 +52,14 @@ public class FirebaseDBManager {
             mFirebaseDB = FirebaseDatabase.getInstance();
         }
         return mFirebaseDB;
+    }
+
+    public static FirebaseStorage getFirebaseStorage() {
+        return FirebaseStorage.getInstance();
+    }
+
+    public static StorageReference getStorageReference(String path) {
+        return getFirebaseStorage().getReference().child(path);
     }
 
 

@@ -8,11 +8,93 @@
     tools:context="com.gauravbg.myresume.MainActivity">
 
     <LinearLayout
+        android:id="@+id/profile_section"
         android:layout_width="match_parent"
-        android:layout_height="100dp">
+        android:background="@color/primary"
+        android:orientation="vertical"
+        android:layout_height="@dimen/profile_section_height">
+        
+        <RelativeLayout
+            android:id="@+id/contact_layout"
+            android:layout_marginTop="6dp"
+            android:layout_width="match_parent"
+            android:background="@android:color/transparent"
+            android:layout_height="@dimen/contact_layout_height">
+
+            <ImageButton
+                android:id="@+id/message_button"
+                android:src="@mipmap/ic_message_white_24dp"
+                android:layout_alignParentRight="true"
+                android:background="@android:color/transparent"
+                android:layout_marginLeft="@dimen/contact_icon_margin"
+                android:layout_marginRight="@dimen/contact_icon_margin"
+                android:layout_width="@dimen/contact_icon_height_width"
+                android:layout_height="@dimen/contact_icon_height_width" />
+
+            <ImageButton
+                android:id="@+id/email_button"
+                android:src="@mipmap/ic_email_white_24dp"
+                android:layout_toLeftOf="@id/message_button"
+                android:background="@android:color/transparent"
+                android:layout_marginLeft="@dimen/contact_icon_margin"
+                android:layout_marginRight="@dimen/contact_icon_margin"
+                android:layout_width="@dimen/contact_icon_height_width"
+                android:layout_height="@dimen/contact_icon_height_width" />
+
+            <ImageButton
+                android:id="@+id/call_button"
+                android:src="@mipmap/ic_call_white_24dp"
+                android:layout_toLeftOf="@id/email_button"
+                android:background="@android:color/transparent"
+                android:layout_marginLeft="@dimen/contact_icon_margin"
+                android:layout_marginRight="@dimen/contact_icon_margin"
+                android:layout_width="@dimen/contact_icon_height_width"
+                android:layout_height="@dimen/contact_icon_height_width" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:background="@android:color/transparent"
+            android:padding="5dp"
+            android:layout_height="@dimen/profile_photo_section_height">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/profile_image"
+                android:layout_width="@dimen/profile_photo_size"
+                android:layout_height="@dimen/profile_photo_size"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:src="@mipmap/ic_account_circle_white_48dp"
+                app:civ_border_width="2dp"
+                android:layout_centerVertical="true"
+                app:civ_border_color="@color/accent"/>
+
+            <TextView
+                android:id="@+id/name_tv"
+                android:layout_width="match_parent"
+                android:layout_margin="5dp"
+                android:layout_toRightOf="@id/profile_image"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_enabled"
+                android:textSize="22dp"/>
+
+            <TextView
+                android:id="@+id/title_tv"
+                android:layout_margin="5dp"
+                android:layout_width="match_parent"
+                android:layout_toRightOf="@id/profile_image"
+                android:layout_below="@+id/name_tv"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_enabled"
+                android:textSize="16dp"/>
+
+        </RelativeLayout>
 
         <Button
             android:id="@+id/add_profile"
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="30dp"
             android:layout_gravity="center"
@@ -20,35 +102,48 @@
 
     </LinearLayout>
 
-    <com.ogaclejapan.smarttablayout.SmartTabLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@id/viewpagertab"
+    <LinearLayout
+        android:id="@+id/page_section"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/tab_height"
-        android:clipToPadding="false"
-        android:paddingLeft="4dp"
-        android:paddingRight="4dp"
-        app:stl_defaultTabTextColor="@color/white"
-        app:stl_defaultTabTextHorizontalPadding="18dp"
-        app:stl_dividerColor="@color/transparent"
-        app:stl_dividerThickness="0dp"
-        app:stl_indicatorColor="@color/black_20"
-        app:stl_indicatorCornerRadius="18dp"
-        app:stl_indicatorGravity="center"
-        app:stl_indicatorInterpolation="smart"
-        app:stl_indicatorThickness="36dp"
-        app:stl_underlineColor="@color/transparent"
-        app:stl_underlineThickness="0dp"
-        />
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/viewpager"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_below="@id/viewpagertab"
-        tools:layout_editor_absoluteY="8dp"
-        tools:layout_editor_absoluteX="8dp" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/accent"></View>
 
+        <com.ogaclejapan.smarttablayout.SmartTabLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@id/viewpagertab"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/tab_height"
+            android:clipToPadding="false"
+            android:paddingLeft="4dp"
+            android:paddingRight="4dp"
+            app:stl_defaultTabTextColor="@color/text_enabled"
+            app:stl_defaultTabTextHorizontalPadding="18dp"
+            app:stl_dividerColor="@color/transparent"
+            app:stl_dividerThickness="0dp"
+            app:stl_indicatorColor="@color/black_20"
+            app:stl_indicatorCornerRadius="18dp"
+            app:stl_indicatorGravity="center"
+            app:stl_indicatorInterpolation="smart"
+            app:stl_indicatorThickness="36dp"
+            app:stl_underlineColor="@color/transparent"
+            app:stl_underlineThickness="0dp"
+            android:background="@color/primary"
+            />
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/viewpager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/viewpagertab"
+            tools:layout_editor_absoluteY="8dp"
+            tools:layout_editor_absoluteX="8dp" />
+
+    </LinearLayout>
 
 </LinearLayout>
