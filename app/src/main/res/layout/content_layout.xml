@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/rating_content_line"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/rating_content_text"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:textSize="@dimen/content_textsize" />
+
+        <RatingBar
+            android:id="@+id/rating_content_rating"
+            style="?android:attr/ratingBarStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:isIndicator="true"
+            android:numStars="5"
+            android:progressTint="@color/cyan_500"
+            android:secondaryProgressTint="#00000000"
+            android:stepSize="0.5" />
+
+
+    </RelativeLayout>
+
+    <com.bluejamesbond.text.DocumentView xmlns:ext="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/text_content_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:inputType="textMultiLine"
+        ext:documentView_antialias="true"
+        ext:documentView_cacheConfig="auto_quality"
+        ext:documentView_hyphen="-"
+        ext:documentView_lineHeightMultiplier="1.2"
+        ext:documentView_maxLines="100"
+        ext:documentView_insetPaddingBottom="10dp"
+        ext:documentView_insetPaddingTop="10dp"
+        ext:documentView_reverse="false"
+        ext:documentView_textAlignment="justified"
+        ext:documentView_textFormat="plain"
+        ext:documentView_textSubPixel="true"
+        android:textSize="@dimen/content_textsize" />
+
+</LinearLayout>

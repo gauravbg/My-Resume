@@ -7,4 +7,12 @@
   <dimen name="profile_section_height">130dp</dimen>
   <dimen name="profile_photo_section_height">100dp</dimen>
   <dimen name="profile_photo_size">80dp</dimen>
+  <dimen name="section_title_height">24dp</dimen>
+  <dimen name="section_title_container_height">24.5dp</dimen>
+  <dimen name="section_title_textsize">17dp</dimen>
+  <dimen name="page_padding">10dp</dimen>
+  <dimen name="section_summary_textsize">15dp</dimen>
+  <dimen name="content_textsize">15dp</dimen>
+
+
 </resources>

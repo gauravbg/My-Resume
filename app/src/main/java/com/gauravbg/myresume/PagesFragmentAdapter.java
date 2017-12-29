@@ -11,13 +11,14 @@ import com.gauravbg.myresume.entities.Page;
 import com.gauravbg.myresume.entities.Profile;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
 /**
  * Created by gauravbg on 10/6/17.
  */
-
 public class PagesFragmentAdapter extends FragmentPagerAdapter {
 
     private FragmentManager fm;
@@ -32,15 +33,16 @@ public class PagesFragmentAdapter extends FragmentPagerAdapter {
                 profile = (Profile)entry.getValue();
             } else if(entry.getValue().getEntityType().equals(MyResumeEntity.PAGE_TYPE)){
                 pages.add((Page)entry.getValue());
-                pages.add((Page)entry.getValue());
-                pages.add((Page)entry.getValue());
             }
         }
-
+        Collections.sort(pages, new Comparator<Page>() {
+            @Override
+            public int compare(Page o1, Page o2) {
+                return o1.getPageNumber() - o2.getPageNumber();
+            }
+        });
         this.context = context;
     }
-
-
 
     @Override
     public Fragment getItem(int position) {

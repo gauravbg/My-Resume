@@ -60,7 +60,7 @@ public class Section implements MyResumeEntity, Parcelable{
     }
 
     public void setTitle(String title) {
-        title = title;
+        this.title = title;
     }
 
     public int getNumber() {
@@ -76,7 +76,7 @@ public class Section implements MyResumeEntity, Parcelable{
     }
 
     public void setTimeline(String timeline) {
-        timeline = timeline;
+        this.timeline = timeline;
     }
 
     public String getSummary() {

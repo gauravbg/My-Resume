@@ -35,7 +35,7 @@ public class Profile implements MyResumeEntity, Parcelable {
         this.address =  in.readString();
         this.imageUrl = in.readString();
         this.pages = in.createStringArrayList();
-
+        this.links = in.createTypedArrayList(Link.CREATOR);
     }
 
     public Profile() {
@@ -53,6 +53,8 @@ public class Profile implements MyResumeEntity, Parcelable {
     private String imageUrl;
 
     private List<String> pages = new ArrayList<>();
+
+    private List<Link> links = new ArrayList<>();
 
     public Profile(String username) {
         this.setUsername(username);
@@ -139,6 +141,15 @@ public class Profile implements MyResumeEntity, Parcelable {
         this.imageUrl = imageUrl;
     }
 
+
+    public List<Link> getLinks() {
+        return links;
+    }
+
+    public void setLinks(List<Link> links) {
+        this.links = links;
+    }
+
     @Override
     public String getEntityType() {
         return MyResumeEntity.PROFILE_TYPE;
@@ -163,6 +174,7 @@ public class Profile implements MyResumeEntity, Parcelable {
         dest.writeString(this.address);
         dest.writeString(this.imageUrl);
         dest.writeStringList(this.pages);
+        dest.writeTypedList(this.links);
 
     }
 }

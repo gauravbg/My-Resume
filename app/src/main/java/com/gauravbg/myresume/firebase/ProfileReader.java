@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.bumptech.glide.Glide;
 import com.gauravbg.myresume.entities.Content;
+import com.gauravbg.myresume.entities.Link;
 import com.gauravbg.myresume.entities.MyResumeEntity;
 import com.gauravbg.myresume.entities.Page;
 import com.gauravbg.myresume.entities.Profile;
@@ -152,6 +153,8 @@ public class ProfileReader {
             for(DataSnapshot child: profileSnapShot.getChildren()) {
                 if(child.getKey().equals("pages")) {
                     //do nothing
+                } else if(child.getKey().equals("links")) {
+                    profile.setLinks((List<Link>) child.getValue());
                 } else {
                     String value = (String)child.getValue();
                     switch(child.getKey()) {
@@ -276,6 +279,7 @@ public class ProfileReader {
                 switch (entry.getKey()) {
                     case "id": content.setId((String)entry.getValue()); break;
                     case "value": content.setValue((String)entry.getValue()); break;
+                    case "rating": content.setRating((long)entry.getValue()); break;
                     case "type":
                         switch((String)entry.getValue()) {
                             case "RATING": content.setType(Content.ContentType.RATING); break;

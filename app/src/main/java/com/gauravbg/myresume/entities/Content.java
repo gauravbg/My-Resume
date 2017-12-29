@@ -11,6 +11,7 @@ public class Content implements MyResumeEntity, Parcelable{
 
     private String id;
     private String value;
+    private long rating;
     private ContentType type;
 
 
@@ -27,6 +28,7 @@ public class Content implements MyResumeEntity, Parcelable{
     public Content(Parcel in){
         this.id = in.readString();
         this.value = in.readString();
+        this.rating = in.readLong();
         this.type = ContentType.valueOf(in.readString());
     }
 
@@ -58,6 +60,14 @@ public class Content implements MyResumeEntity, Parcelable{
         this.type = type;
     }
 
+    public long getRating() {
+        return rating;
+    }
+
+    public void setRating(long rating) {
+        this.rating = rating;
+    }
+
     public enum ContentType {
         TEXT,
         RATING
@@ -78,6 +88,7 @@ public class Content implements MyResumeEntity, Parcelable{
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.id);
         dest.writeString(this.value);
+        dest.writeLong(this.rating);
         dest.writeString(this.type.name());
     }
 }

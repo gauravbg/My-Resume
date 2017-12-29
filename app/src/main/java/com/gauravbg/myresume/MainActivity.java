@@ -10,6 +10,9 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -31,7 +34,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MainActivity extends AppCompatActivity{
 
-    private static final String GAURAV_PROFILE_ID = "-KvW1HBWUJOjZJxQ181t";
+    private static final String GAURAV_PROFILE_ID = "-L1WI0X02u4rIV1xltPV";
     private final String LOG = getClass().getCanonicalName();
     private Map<String, MyResumeEntity> allEntities;
 
@@ -73,15 +76,28 @@ public class MainActivity extends AppCompatActivity{
         setContentView(R.layout.activity_main);
         profileReader.fetchProfile(GAURAV_PROFILE_ID);
 
-        Button addProfile = (Button) findViewById(R.id.add_profile);
-        addProfile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
+        return true;
+
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.add_my_profile:
                 MyProfileEntityCreator profileEntityCreator = new MyProfileEntityCreator();
                 profileWriter.writeProfile(profileEntityCreator.getMyProfileEntities());
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
 
-            }
-        });
     }
 
     private void showProfile() {

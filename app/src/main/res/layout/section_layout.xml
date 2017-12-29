@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="@dimen/page_padding">
+
+    <RelativeLayout
+        android:id="@+id/section_title_container"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/section_title_container_height">
+
+        <TextView
+            android:id="@+id/section_title"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/section_title_height"
+            android:layout_alignParentLeft="true"
+            android:textAllCaps="true"
+            android:textSize="@dimen/section_title_textsize"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/section_timeline"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/section_title_height"
+            android:layout_alignParentRight="true" />
+
+        <View
+            android:id="@+id/section_title_divider"
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_below="@id/section_title"
+            android:background="@color/primary_dark"></View>
+    </RelativeLayout>
+
+    <net.cachapa.expandablelayout.ExpandableLayout
+        android:id="@+id/expandableLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:el_duration="500"
+        app:el_expanded="true"
+        app:el_parallax="0.9">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+        <RelativeLayout
+            android:id="@+id/section_summary_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.bluejamesbond.text.DocumentView xmlns:ext="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/section_summary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:inputType="textMultiLine"
+                ext:documentView_antialias="true"
+                ext:documentView_cacheConfig="auto_quality"
+                ext:documentView_hyphen="-"
+                ext:documentView_lineHeightMultiplier="1.2"
+                ext:documentView_maxLines="100"
+                ext:documentView_reverse="false"
+                ext:documentView_textAlignment="justified"
+                ext:documentView_textFormat="plain"
+                ext:documentView_textSubPixel="true"
+                android:textSize="@dimen/section_summary_textsize" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/section_content_section"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:id="@+id/section_content_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"></LinearLayout>
+
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/section_subsection_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"></LinearLayout>
+
+        </LinearLayout>
+
+    </net.cachapa.expandablelayout.ExpandableLayout>
+
+</LinearLayout>
