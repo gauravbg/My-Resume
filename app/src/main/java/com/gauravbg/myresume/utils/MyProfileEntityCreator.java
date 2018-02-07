@@ -17,7 +17,7 @@ import java.util.List;
 
 public class MyProfileEntityCreator {
 
-    public List<MyResumeEntity> getMyProfileEntities() {
+    public static List<MyResumeEntity> getMyProfileEntities() {
         List<MyResumeEntity> entities = new ArrayList<>();
         entities.add(getMyProfile());
         for(MyResumeEntity entity: getPages()) {
@@ -26,7 +26,7 @@ public class MyProfileEntityCreator {
         return entities;
     }
 
-    private Profile getMyProfile() {
+    private static Profile getMyProfile() {
 
         // Profile
         Profile profile = new Profile("gauravbg");
@@ -50,7 +50,7 @@ public class MyProfileEntityCreator {
 
     }
 
-    private List<Page> getPages() {
+    private static List<Page> getPages() {
 
         List<Page> pages = new ArrayList<>();
         pages.add(getProfilePage());
@@ -58,12 +58,12 @@ public class MyProfileEntityCreator {
         pages.add(getIndustryExperiencePage());
         pages.add(getAcademicProjects());
         pages.add(getAcheivementsPage());
-        pages.add(getContactPage());
+        pages.add(getContactPage(getMyProfile()));
         return pages;
     }
 
 
-    private Page getProfilePage() {
+    private static Page getProfilePage() {
 
         //Profile Page
         //========================================
@@ -183,7 +183,7 @@ public class MyProfileEntityCreator {
     }
 
 
-    private Page getAcademicPage() {
+    private static Page getAcademicPage() {
 
         //Academic Qualification Page
         Page page = new Page();
@@ -234,7 +234,7 @@ public class MyProfileEntityCreator {
         return page;
     }
 
-    private Page getIndustryExperiencePage() {
+    private static Page getIndustryExperiencePage() {
         Page page = new Page();
         page.setPageNumber(2);
         page.setTitle("Industry Experience");
@@ -286,7 +286,7 @@ public class MyProfileEntityCreator {
     }
 
 
-    private Page getAcademicProjects() {
+    private static Page getAcademicProjects() {
         Page page = new Page();
         page.setTitle("Academic & Personal Projects");
         page.setPageNumber(3);
@@ -309,7 +309,7 @@ public class MyProfileEntityCreator {
     }
 
 
-    private Page getAcheivementsPage() {
+    private static Page getAcheivementsPage() {
         Page page = new Page();
         page.setTitle("Achievements & Extracurricular Activities");
         page.setPageNumber(4);
@@ -331,14 +331,13 @@ public class MyProfileEntityCreator {
 
     }
 
-    private Page getContactPage() {
+    public static Page getContactPage(Profile profile) {
         Page page = new Page();
         page.setTitle("Contact");
         page.setPageNumber(5);
         Section section = new Section();
         section.setNumber(0);
         List<Content> contents = new ArrayList<>();
-        Profile profile = getMyProfile();
 
         //address
         Content address = new Content();
@@ -369,5 +368,6 @@ public class MyProfileEntityCreator {
         page.setSections(sections);
         return page;
     }
+
 
 }

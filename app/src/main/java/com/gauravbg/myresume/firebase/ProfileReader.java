@@ -86,6 +86,9 @@ public class ProfileReader {
         profileRef.child(profileId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                if(!dataSnapshot.exists()) {
+                    return;
+                }
                 TASK_COUNT++;
                 if(dataSnapshot.hasChild("pages")) {
                     List<String> pages = (List<String>) dataSnapshot.child("pages").getValue();
@@ -112,8 +115,10 @@ public class ProfileReader {
 
     public void fetchImage(CircleImageView profileIV, String url) {
 
-        StorageReference imageRef = storage.getReferenceFromUrl(url);
-        Glide.with(profileIV.getContext()).load(url).into(profileIV);
+        if(url != null) {
+            StorageReference imageRef = storage.getReferenceFromUrl(url);
+            Glide.with(profileIV.getContext()).load(url).into(profileIV);
+        }
     }
 
     private void fetchPage(String pageId) {

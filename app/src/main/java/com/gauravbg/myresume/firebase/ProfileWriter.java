@@ -1,6 +1,9 @@
 package com.gauravbg.myresume.firebase;
 
+import android.util.Log;
+
 import com.gauravbg.myresume.entities.MyResumeEntity;
+import com.gauravbg.myresume.entities.Page;
 import com.gauravbg.myresume.entities.Profile;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -21,6 +24,11 @@ public class ProfileWriter {
     private int saveEntityCount = 0;
     private int saveEntityCounter = 0;
     private Profile profile;
+    private String profileId;
+
+    public ProfileWriter(ProfileWriter.EntitySaveListener listener) {
+        this.listener = listener;
+    }
 
     private DatabaseReference.CompletionListener completionListener = new DatabaseReference.CompletionListener() {
 
@@ -36,7 +44,7 @@ public class ProfileWriter {
                 if(saveEntityCounter == saveEntityCount-1) {
                     pageIds.add(databaseReference.getKey());
                     profile.setPages(pageIds);
-                    profileRef.push().setValue(profile, completionListener);
+                    profileRef.child(profileId).setValue(profile, completionListener);
                 } else if(saveEntityCounter == saveEntityCount) {
                     if(listener != null) {
                         listener.onEntitySaved(databaseReference);
@@ -50,17 +58,20 @@ public class ProfileWriter {
 
     };
 
-    public ProfileWriter(ProfileWriter.EntitySaveListener listener) {
-        this.listener = listener;
-    }
-
 
 
     //TODO: Needs profile to be the first entity. Fix this Logic
-    public void writeProfile(List<MyResumeEntity> entities) {
+    public void writeProfile(List<MyResumeEntity> entities, String uid) {
 
+        for(MyResumeEntity entity: entities) {
+            if(entity.getEntityType() == MyResumeEntity.PAGE_TYPE) {
+                Page page = (Page) entity;
+                pagesRef.child(page.getId()).removeValue();
+            }
+        }
         saveEntityCount = 0;
         saveEntityCounter = 0;
+        profileId = uid;
         saveEntityCount = entities.size();
 
         for(MyResumeEntity entity: entities) {

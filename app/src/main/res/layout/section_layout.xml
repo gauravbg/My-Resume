@@ -6,31 +6,75 @@
     android:orientation="vertical"
     android:padding="@dimen/page_padding">
 
+
+    <RelativeLayout
+        android:id="@+id/editor_layout"
+        android:layout_width="match_parent"
+        android:gravity="center_vertical"
+        android:visibility="gone"
+        android:layout_height="wrap_content">
+
+        <ImageButton
+            android:id="@+id/add_content_btn"
+            android:background="@mipmap/ic_note_add_black_48dp"
+            android:layout_toLeftOf="@id/add_subsection_btn"
+            android:layout_margin="2dp"
+            android:layout_width="20dp"
+            android:layout_height="20dp" />
+
+        <ImageButton
+            android:id="@+id/add_subsection_btn"
+            android:background="@mipmap/ic_library_add_black_48dp"
+            android:layout_toLeftOf="@id/delete_section_btn"
+            android:layout_margin="2dp"
+            android:layout_width="20dp"
+            android:layout_height="20dp" />
+
+        <ImageButton
+            android:id="@+id/delete_section_btn"
+            android:background="@mipmap/ic_delete_black_48dp"
+            android:layout_alignParentRight="true"
+            android:layout_margin="2dp"
+            android:layout_width="20dp"
+            android:layout_height="20dp" />
+
+    </RelativeLayout>
+
     <RelativeLayout
         android:id="@+id/section_title_container"
         android:layout_width="match_parent"
         android:layout_height="@dimen/section_title_container_height">
 
-        <TextView
-            android:id="@+id/section_title"
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/section_title_height"
-            android:layout_alignParentLeft="true"
-            android:textAllCaps="true"
-            android:textSize="@dimen/section_title_textsize"
-            android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/section_timeline"
+        <EditText
+            android:id="@+id/section_title_et"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/section_title_height"
-            android:layout_alignParentRight="true" />
+            android:inputType="textCapCharacters"
+            android:layout_alignParentLeft="true"
+            android:background="@null"
+            android:textSize="@dimen/section_title_textsize"
+            android:hint="@string/hint_title"
+            android:textColor="@color/primary_dark"
+            android:textStyle="bold"
+            />
+
+
+        <EditText
+            android:id="@+id/section_timeline_et"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/section_title_height"
+            android:layout_alignParentRight="true"
+            android:background="@null"
+            android:textSize="@dimen/section_timeline_textsize"
+            android:textColor="@color/primary_dark"
+            android:hint="@string/hint_timeline"/>
 
         <View
             android:id="@+id/section_title_divider"
             android:layout_width="match_parent"
             android:layout_height="0.5dp"
-            android:layout_below="@id/section_title"
+            android:layout_below="@id/section_title_et"
             android:background="@color/primary_dark"></View>
     </RelativeLayout>
 
@@ -38,7 +82,7 @@
         android:id="@+id/expandableLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:el_duration="500"
+        app:el_duration="250"
         app:el_expanded="true"
         app:el_parallax="0.9">
 
@@ -47,49 +91,64 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-        <RelativeLayout
-            android:id="@+id/section_summary_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <com.bluejamesbond.text.DocumentView xmlns:ext="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/section_summary"
+            <RelativeLayout
+                android:id="@+id/section_summary_container"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:inputType="textMultiLine"
-                ext:documentView_antialias="true"
-                ext:documentView_cacheConfig="auto_quality"
-                ext:documentView_hyphen="-"
-                ext:documentView_lineHeightMultiplier="1.2"
-                ext:documentView_maxLines="100"
-                ext:documentView_reverse="false"
-                ext:documentView_textAlignment="justified"
-                ext:documentView_textFormat="plain"
-                ext:documentView_textSubPixel="true"
-                android:textSize="@dimen/section_summary_textsize" />
+                android:layout_height="wrap_content">
 
-        </RelativeLayout>
+                <FrameLayout
+                    android:id="@+id/summary_fl"
+                    android:layout_alignParentTop="true"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
-        <RelativeLayout
-            android:id="@+id/section_content_section"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+                    <com.bluejamesbond.text.DocumentView xmlns:ext="http://schemas.android.com/apk/res-auto"
+                        android:id="@+id/section_summary"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textMultiLine"
+                        android:textSize="@dimen/section_summary_textsize"
+                        ext:documentView_antialias="true"
+                        ext:documentView_cacheConfig="no_cache"
+                        ext:documentView_hyphen="-"
+                        ext:documentView_lineHeightMultiplier="1.2"
+                        ext:documentView_maxLines="100"
+                        ext:documentView_reverse="false"
+                        ext:documentView_textAlignment="justified"
+                        ext:documentView_textFormat="plain"
+                        ext:documentView_textSubPixel="true" />
+
+                    <EditText
+                        android:id="@+id/section_summary_et"
+                        android:maxLines="100"
+                        android:textSize="15dp"
+                        android:hint="@string/hint_summary"
+                        android:background="@null"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+                </FrameLayout>
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/section_content_section"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:id="@+id/section_content_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"></LinearLayout>
+
+
+            </RelativeLayout>
 
             <LinearLayout
-                android:id="@+id/section_content_container"
+                android:id="@+id/section_subsection_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"></LinearLayout>
-
-
-        </RelativeLayout>
-
-        <LinearLayout
-            android:id="@+id/section_subsection_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"></LinearLayout>
 
         </LinearLayout>
 

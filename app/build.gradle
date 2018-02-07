@@ -7,8 +7,8 @@ android {
         applicationId "com.gauravbg.myresume"
         minSdkVersion 19
         targetSdkVersion 25
-        versionCode 1
-        versionName "1.0"
+        versionCode 3
+        versionName "3"
         multiDexEnabled = true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
@@ -23,25 +23,35 @@ android {
 
 
 dependencies {
+    implementation 'com.android.support:support-v4:25.4.0'
     compile fileTree(dir: 'libs', include: ['*.jar'])
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     compile 'com.android.support:appcompat-v7:25.3.1'
+    compile 'com.android.support:design:25.0.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.0-beta4'
     testCompile 'junit:junit:4.12'
 
-    compile 'com.ogaclejapan.smarttablayout:library:1.6.1@aar'
-    compile 'com.ogaclejapan.smarttablayout:utils-v4:1.6.1@aar'
     compile 'com.google.firebase:firebase-database:11.0.4'
     compile 'com.google.firebase:firebase-storage:11.0.4'
-    compile 'de.hdodenhof:circleimageview:2.1.0'
+    compile 'com.google.firebase:firebase-auth:11.0.4'
+    compile 'com.google.android.gms:play-services-auth:11.0.4'
 
+    compile 'com.ogaclejapan.smarttablayout:library:1.6.1@aar'
+    compile 'com.ogaclejapan.smarttablayout:utils-v4:1.6.1@aar'
+    compile 'de.hdodenhof:circleimageview:2.1.0'
     compile 'com.github.bumptech.glide:glide:4.2.0'
     compile 'net.cachapa.expandablelayout:expandablelayout:2.9.2'
     compile 'com.github.bluejamesbond:textjustify-android:2.1.6'
+    compile 'com.github.medyo:fancybuttons:1.8.4'
+    compile 'com.cepheuen.elegant-number-button:lib:1.0.2'
 
 }
 
 apply plugin: 'com.google.gms.google-services'
+
+
+
+
 

@@ -26,7 +26,7 @@ public class Profile implements MyResumeEntity, Parcelable {
     public Profile(Parcel in){
 
         this.id = in.readString();
-        this.name = in.readString();
+        this.username = in.readString();
         this.name =  in.readString();
         this.title =  in.readString();
         this.email =  in.readString();

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:background="@color/primary"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:text="@string/photo_dialog_title"
+        android:textSize="24dp"
+        android:gravity="center"
+        android:textColor="@color/accent"
+        android:layout_marginBottom="10dp"
+        android:layout_height="wrap_content" />
+
+
+    <mehdi.sakout.fancybuttons.FancyButton xmlns:fancy="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/set_photo_btn"
+        fancy:fb_text="@string/set_change_photo"
+        fancy:fb_borderWidth="2dp"
+        fancy:fb_borderColor="@color/accent"
+        fancy:fb_defaultColor="@color/primary"
+        fancy:fb_focusColor="@color/primary_dark"
+        fancy:fb_radius="30dp"
+        fancy:fb_textSize="17dp"
+        fancy:fb_textGravity="center"
+        android:layout_gravity="center_horizontal"
+        android:layout_width="match_parent"
+        android:layout_margin="5dp"
+        android:layout_height="50dp"/>
+
+    <mehdi.sakout.fancybuttons.FancyButton xmlns:fancy="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/delete_photo_btn"
+        fancy:fb_text="@string/delete_photo"
+        fancy:fb_borderWidth="2dp"
+        fancy:fb_borderColor="@color/accent"
+        fancy:fb_defaultColor="@color/primary"
+        fancy:fb_focusColor="@color/primary_dark"
+        fancy:fb_radius="30dp"
+        fancy:fb_textSize="17dp"
+        fancy:fb_textGravity="center"
+        android:layout_gravity="center_horizontal"
+        android:layout_width="match_parent"
+        android:layout_margin="5dp"
+        android:layout_height="50dp"/>
+</LinearLayout>

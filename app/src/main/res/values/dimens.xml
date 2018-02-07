@@ -10,6 +10,7 @@
   <dimen name="section_title_height">24dp</dimen>
   <dimen name="section_title_container_height">24.5dp</dimen>
   <dimen name="section_title_textsize">17dp</dimen>
+  <dimen name="section_timeline_textsize">14dp</dimen>
   <dimen name="page_padding">10dp</dimen>
   <dimen name="section_summary_textsize">15dp</dimen>
   <dimen name="content_textsize">15dp</dimen>
