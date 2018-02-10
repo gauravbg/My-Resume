@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="75dp"
+    android:padding="5dp">
+
+    <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/profile_image"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="10dp"
+        android:src="@mipmap/ic_account_circle_white_48dp"
+        app:civ_border_color="@color/accent"
+        app:civ_border_width="2dp" />
+
+    <EditText
+        android:id="@+id/name_et"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:layout_toRightOf="@id/profile_image"
+        android:background="@null"
+        android:textColor="@color/text_enabled"
+        android:enabled="false"
+        android:textSize="20dp" />
+
+    <EditText
+        android:id="@+id/title_et"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/name_et"
+        android:layout_margin="5dp"
+        android:layout_toRightOf="@id/profile_image"
+        android:background="@null"
+        android:textColor="@color/text_enabled"
+        android:enabled="false"
+        android:textSize="15dp" />
+
+</RelativeLayout>

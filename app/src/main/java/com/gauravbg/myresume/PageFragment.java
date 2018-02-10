@@ -3,6 +3,7 @@ package com.gauravbg.myresume;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -163,7 +164,7 @@ public class PageFragment extends Fragment {
         });
 
 
-        if (section.getTitle() == null && section.getTimeline() == null) {
+        if ((section.getTitle() == null || TextUtils.isEmpty(section.getTitle())) && (section.getTimeline() == null || TextUtils.isEmpty(section.getTimeline()))) {
             if(isEditMode) {
                 sectionLayout.findViewById(R.id.section_title_container).setVisibility(View.VISIBLE);
             } else {
@@ -178,7 +179,7 @@ public class PageFragment extends Fragment {
                 }
             });
 
-            if (section.getTitle() != null) {
+            if (section.getTitle() != null && !TextUtils.isEmpty(section.getTitle())) {
                 if (isSubSection) {
                     title.setAllCaps(false);
                 }
@@ -199,7 +200,7 @@ public class PageFragment extends Fragment {
             }
 
 
-            if (section.getTimeline() != null) {
+            if (section.getTimeline() != null && !TextUtils.isEmpty(section.getTimeline())) {
                 timeline.setText(section.getTimeline());
                 if(isEditMode) {
                     timeline.setEnabled(true);
@@ -227,7 +228,7 @@ public class PageFragment extends Fragment {
                 }
             }
         });
-        if(section.getSummary() == null) {
+        if(section.getSummary() == null && TextUtils.isEmpty(section.getSummary())) {
             if(isEditMode) {
                 sectionLayout.findViewById(R.id.section_summary_container).setVisibility(View.VISIBLE);
             } else {
@@ -352,6 +353,7 @@ public class PageFragment extends Fragment {
             }
 
         }
+
 
         return contentLayout;
     }

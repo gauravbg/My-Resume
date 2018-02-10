@@ -64,14 +64,15 @@ public class IntroActivity extends AppCompatActivity {
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(IntroActivity.this, MainActivity.class);
-                if(mUser != null) {
-                    intent.putExtra(MainActivity.UID, mUser.getUid());
-                    intent.putExtra(MainActivity.IS_MY_PROFILE, false);
-                    IntroActivity.this.startActivity(intent);
-                } else {
-                    //Do Nothing
-                }
+                Intent intent = new Intent(IntroActivity.this, SearchActivity.class);
+                IntroActivity.this.startActivity(intent);
+//                if(mUser != null) {
+//                    intent.putExtra(MainActivity.UID, mUser.getUid());
+//                    intent.putExtra(MainActivity.IS_MY_PROFILE, false);
+//                    IntroActivity.this.startActivity(intent);
+//                } else {
+//                    //Do Nothing
+//                }
             }
         });
 

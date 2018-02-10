@@ -242,7 +242,8 @@ public class AccountSetupActivity extends AppCompatActivity implements GoogleApi
                 deletePhotoBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        profileImage.setImageURI(null);
+                        profileImage.setBackground(getResources().getDrawable(R.mipmap.ic_account_circle_white_48dp));
+                        profileImage.setTag(null);
                         photoPickerDialog.dismiss();
                     }
                 });
@@ -329,6 +330,7 @@ public class AccountSetupActivity extends AppCompatActivity implements GoogleApi
             }
         } else if(requestCode == PICK_IMAGE) {
             if (resultCode == RESULT_OK) {
+                profileImage = (CircleImageView) findViewById(R.id.profile_image);
                 profileImage.setImageURI(data.getData());
                 profileImage.setTag(data.getData());
             } else {

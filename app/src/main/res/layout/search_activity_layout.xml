@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:padding="10dp"
+    android:background="@color/primary"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <EditText
+        android:id="@+id/search_et"
+        android:layout_toLeftOf="@id/search_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    
+    <ImageButton
+        android:id="@+id/search_button"
+        android:layout_alignParentRight="true"
+        android:background="@mipmap/ic_search_white_48dp"
+        android:layout_marginLeft="10dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp" />
+
+    <View
+        android:id="@+id/divider"
+        android:layout_below="@id/search_et"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="@color/accent"></View>
+
+    <RelativeLayout
+        android:id="@+id/dev_profile_layout"
+        android:layout_width="match_parent"
+        android:layout_height="75dp"
+        android:layout_below="@id/divider"
+        android:layout_marginTop="10dp"
+        android:visibility="gone"
+        android:padding="5dp">
+
+        <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/dev_profile_image"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:src="@mipmap/ic_account_circle_white_48dp"
+            app:civ_border_color="@color/accent"
+            app:civ_border_width="2dp" />
+
+        <EditText
+            android:id="@+id/dev_name_et"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:layout_toRightOf="@id/dev_profile_image"
+            android:background="@null"
+            android:textColor="@color/text_enabled"
+            android:enabled="false"
+            android:textSize="20dp" />
+
+        <EditText
+            android:id="@+id/dev_title_et"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/dev_name_et"
+            android:layout_margin="5dp"
+            android:layout_toRightOf="@id/dev_profile_image"
+            android:background="@null"
+            android:textColor="@color/text_enabled"
+            android:enabled="false"
+            android:textSize="15dp" />
+
+
+        <View
+            android:id="@+id/divider_1"
+            android:layout_below="@id/dev_profile_layout"
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/accent"></View>
+
+    </RelativeLayout>
+
+
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/all_profile_rc"
+        android:layout_below="@id/dev_profile_layout"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+    </android.support.v7.widget.RecyclerView>
+
+</RelativeLayout>

@@ -2,6 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:visible="false"
         android:id="@+id/add_my_profile"
         android:title="Add My Profile" />
 

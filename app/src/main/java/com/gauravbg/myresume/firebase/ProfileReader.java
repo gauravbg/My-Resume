@@ -39,7 +39,6 @@ public class ProfileReader {
     private static int TASK_COUNT = 0;
     private static int taskCounter = 0;
 
-
     private EntityFetchListener localFetchListener = new EntityFetchListener() {
 
         @Override

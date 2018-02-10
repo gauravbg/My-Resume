@@ -82,8 +82,11 @@ public class MainActivity extends AppCompatActivity{
     private CircleImageView profileIV;
     private AlertDialog photoPickerDialog;
     private AlertDialog pageRenameDialog;
+    private AlertDialog saveConfirmationDialog;
+    private AlertDialog cancelConfirmationDialog;
 
     private Menu mMenu;
+    private boolean isLoading;
     private PagesFragmentAdapter adapter;
     private ViewPager viewPager;
     private SmartTabLayout viewPagerTab;
@@ -98,6 +101,8 @@ public class MainActivity extends AppCompatActivity{
         @Override
         public void onEntityFetchFailed(DatabaseError databaseError) {
             Log.e(LOG, "profile not read!:" + databaseError.getMessage());
+            isLoading = false;
+            invalidateOptionsMenu();
         }
     });
 
@@ -110,6 +115,7 @@ public class MainActivity extends AppCompatActivity{
             allEntities.clear();
             findViewById(R.id.full_content_layout).setVisibility(View.GONE);
             findViewById(R.id.progress_layout).setVisibility(View.VISIBLE);
+            ((TextView) findViewById(R.id.loading_msg)).setText(getResources().getString(R.string.fetching_profile));
             profileReader.fetchProfile(PROFILE_ID);
         }
 
@@ -131,6 +137,7 @@ public class MainActivity extends AppCompatActivity{
         findViewById(R.id.full_content_layout).setVisibility(View.GONE);
         findViewById(R.id.progress_layout).setVisibility(View.VISIBLE);
 
+        isLoading = true;
         profileReader.fetchProfile(PROFILE_ID);
         stateListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -154,14 +161,19 @@ public class MainActivity extends AppCompatActivity{
     }
 
     private void refreshUI(boolean saveAndRefresh) {
+        invalidateOptionsMenu();
 
         if(saveAndRefresh) {
             List<MyResumeEntity> entities = new ArrayList<>();
             for(Map.Entry<String, MyResumeEntity> entry: allEntities.entrySet()) {
                 entities.add(entry.getValue());
             }
+            isLoading = true;
             profileWriter.writeProfile(entities, PROFILE_ID);
 
+        } else {
+            isLoading = true;
+            profileReader.fetchProfile(PROFILE_ID);
         }
 
     }
@@ -177,6 +189,10 @@ public class MainActivity extends AppCompatActivity{
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu, menu);
         mMenu = menu;
+        if(!isMyProfile) {
+            mMenu.findItem(R.id.edit).setVisible(false);
+            mMenu.findItem(R.id.sign_out).setVisible(false);
+        }
         return true;
 
     }
@@ -218,12 +234,71 @@ public class MainActivity extends AppCompatActivity{
                 setLongClickListenerOnTabs();
                 return true;
             case R.id.save:
-                switchEditMode(false);
-                refreshUI(true);
+
+                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(MainActivity.this);
+                dialogBuilder.setTitle("Save Changes");
+                dialogBuilder.setMessage("Are you sure you want to save all changes?");
+                dialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        switchEditMode(false);
+                        findViewById(R.id.full_content_layout).setVisibility(View.GONE);
+                        findViewById(R.id.progress_layout).setVisibility(View.VISIBLE);
+                        ((TextView) findViewById(R.id.loading_msg)).setText("Saving Data...");
+                        refreshUI(true);
+                        if(saveConfirmationDialog != null && saveConfirmationDialog.isShowing()) {
+                            saveConfirmationDialog.dismiss();
+                        }
+
+                    }
+                });
+
+                dialogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if(saveConfirmationDialog != null && saveConfirmationDialog.isShowing()) {
+                            saveConfirmationDialog.dismiss();
+                        }
+
+                    }
+                });
+                saveConfirmationDialog = dialogBuilder.create();
+                saveConfirmationDialog.show();
+
                 return true;
+
+
+
             case R.id.cancel:
-                switchEditMode(false);
-                refreshUI(false);
+                AlertDialog.Builder cancelDialogBuilder = new AlertDialog.Builder(MainActivity.this);
+                cancelDialogBuilder.setTitle("Discard Changes");
+                cancelDialogBuilder.setMessage("Are you sure you want to discard all changes?");
+                cancelDialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        switchEditMode(false);
+                        findViewById(R.id.full_content_layout).setVisibility(View.GONE);
+                        findViewById(R.id.progress_layout).setVisibility(View.VISIBLE);
+                        refreshUI(false);
+                        if(cancelConfirmationDialog != null && cancelConfirmationDialog.isShowing()) {
+                            cancelConfirmationDialog.dismiss();
+                        }
+
+                    }
+                });
+
+                cancelDialogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if(cancelConfirmationDialog != null && cancelConfirmationDialog.isShowing()) {
+                            cancelConfirmationDialog.dismiss();
+                        }
+
+                    }
+                });
+                cancelConfirmationDialog = cancelDialogBuilder.create();
+                cancelConfirmationDialog.show();
+
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -350,10 +425,20 @@ public class MainActivity extends AppCompatActivity{
         startActivityForResult(galleryIntent, PICK_IMAGE);
     }
 
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        if(isLoading) {
+            return false;
+        }
+        return super.onPrepareOptionsMenu(menu);
+    }
+
     private void showProfile() {
 
         findViewById(R.id.full_content_layout).setVisibility(View.VISIBLE);
         findViewById(R.id.progress_layout).setVisibility(View.GONE);
+        isLoading = false;
+        invalidateOptionsMenu();
 
         EditText name_et = (EditText) findViewById(R.id.name_et);
         EditText title_et = (EditText) findViewById(R.id.title_et);
@@ -381,7 +466,7 @@ public class MainActivity extends AppCompatActivity{
                 deletePhotoBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        profileIV.setImageURI(null);
+                        profileIV.setBackground(getResources().getDrawable(R.mipmap.ic_account_circle_white_48dp));
                         photoPickerDialog.dismiss();
                     }
                 });

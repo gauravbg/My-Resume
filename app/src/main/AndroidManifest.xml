@@ -30,6 +30,9 @@
         <activity
             android:screenOrientation="portrait"
             android:name=".AccountSetupActivity"></activity>
+        <activity
+            android:screenOrientation="portrait"
+            android:name=".SearchActivity"></activity>
     </application>
 
 </manifest>

@@ -66,7 +66,11 @@ public class ProfileWriter {
         for(MyResumeEntity entity: entities) {
             if(entity.getEntityType() == MyResumeEntity.PAGE_TYPE) {
                 Page page = (Page) entity;
-                pagesRef.child(page.getId()).removeValue();
+                if(page.getId() != null) {
+                    pagesRef.child(page.getId()).removeValue();
+                }
+            } else if(entity.getEntityType() == MyResumeEntity.PROFILE_TYPE) {
+                ((Profile)entity).getPages().clear();
             }
         }
         saveEntityCount = 0;
