@@ -1,5 +1,6 @@
 package com.gauravbg.myresume.firebase;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -112,11 +113,11 @@ public class ProfileReader {
     }
 
 
-    public void fetchImage(CircleImageView profileIV, String url) {
+    public void fetchImage(Context context, CircleImageView profileIV, String url) {
 
         if(url != null) {
             StorageReference imageRef = storage.getReferenceFromUrl(url);
-            Glide.with(profileIV.getContext()).load(url).into(profileIV);
+            Glide.with(context).load(url).into(profileIV);
         }
     }
 

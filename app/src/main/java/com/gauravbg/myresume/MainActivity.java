@@ -181,7 +181,9 @@ public class MainActivity extends AppCompatActivity{
     @Override
     protected void onStart() {
         super.onStart();
-        mAuth.addAuthStateListener(stateListener);
+        if(isMyProfile) {
+            mAuth.addAuthStateListener(stateListener);
+        }
     }
 
     @Override
@@ -484,7 +486,7 @@ public class MainActivity extends AppCompatActivity{
             }
         }
 
-        profileReader.fetchImage(profileIV, profile.getImageUrl());
+        profileReader.fetchImage(this, profileIV, profile.getImageUrl());
         name_et.setText(profile.getName());
         title_et.setText(profile.getTitle());
         ImageButton call_button = (ImageButton) findViewById(R.id.call_button);
