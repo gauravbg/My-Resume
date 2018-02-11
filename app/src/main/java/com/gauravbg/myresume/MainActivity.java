@@ -272,35 +272,7 @@ public class MainActivity extends AppCompatActivity{
 
 
             case R.id.cancel:
-                AlertDialog.Builder cancelDialogBuilder = new AlertDialog.Builder(MainActivity.this);
-                cancelDialogBuilder.setTitle("Discard Changes");
-                cancelDialogBuilder.setMessage("Are you sure you want to discard all changes?");
-                cancelDialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        switchEditMode(false);
-                        findViewById(R.id.full_content_layout).setVisibility(View.GONE);
-                        findViewById(R.id.progress_layout).setVisibility(View.VISIBLE);
-                        refreshUI(false);
-                        if(cancelConfirmationDialog != null && cancelConfirmationDialog.isShowing()) {
-                            cancelConfirmationDialog.dismiss();
-                        }
-
-                    }
-                });
-
-                cancelDialogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if(cancelConfirmationDialog != null && cancelConfirmationDialog.isShowing()) {
-                            cancelConfirmationDialog.dismiss();
-                        }
-
-                    }
-                });
-                cancelConfirmationDialog = cancelDialogBuilder.create();
-                cancelConfirmationDialog.show();
-
+                showCancelDialog();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -308,7 +280,48 @@ public class MainActivity extends AppCompatActivity{
 
     }
 
+    private void showCancelDialog() {
+        AlertDialog.Builder cancelDialogBuilder = new AlertDialog.Builder(MainActivity.this);
+        cancelDialogBuilder.setTitle("Discard Changes");
+        cancelDialogBuilder.setMessage("Are you sure you want to discard all changes?");
+        cancelDialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switchEditMode(false);
+                findViewById(R.id.full_content_layout).setVisibility(View.GONE);
+                findViewById(R.id.progress_layout).setVisibility(View.VISIBLE);
+                refreshUI(false);
+                if(cancelConfirmationDialog != null && cancelConfirmationDialog.isShowing()) {
+                    cancelConfirmationDialog.dismiss();
+                }
 
+            }
+        });
+
+        cancelDialogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if(cancelConfirmationDialog != null && cancelConfirmationDialog.isShowing()) {
+                    cancelConfirmationDialog.dismiss();
+                }
+
+            }
+        });
+        cancelConfirmationDialog = cancelDialogBuilder.create();
+        cancelConfirmationDialog.show();
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(isLoading) {
+            //Do Nothing
+        } else if(isEditMode) {
+            showCancelDialog();
+        } else {
+            super.onBackPressed();
+        }
+    }
 
     private void changePageNumbers(boolean addedPage, int index) {
         if(addedPage) {

@@ -30,7 +30,7 @@
         fancy:fb_borderWidth="2dp"
         fancy:fb_borderColor="@color/accent"
         fancy:fb_defaultColor="@color/primary"
-        fancy:fb_focusColor="@color/primary_dark"
+        fancy:fb_focusColor="@color/white_20"
         fancy:fb_radius="30dp"
         fancy:fb_textSize="22dp"
         android:layout_gravity="center_horizontal"
