@@ -11,6 +11,14 @@
         android:title="Edit" />
 
     <item
+        android:id="@+id/upload_pdf"
+        android:title="Upload PDF" />
+
+    <item
+        android:id="@+id/download_pdf"
+        android:title="Download PDF" />
+
+    <item
         android:id="@+id/sign_out"
         android:title="Sign Out" />
 

@@ -54,6 +54,8 @@
     <string name="hint_timeline">Timeline</string>
     <string name="hint_summary">Summary</string>
     <string name="hint_content">Content</string>
+    <string name="hint_content_name">Name</string>
+    <string name="hint_content_url">Url</string>
     <string name="hint_page_name">Page Name</string>
     <string name="hint_page_number">Page Number</string>
     <string name="hint_phonenumber">Phone Number</string>
@@ -63,6 +65,7 @@
 
 
     <string name="save">Save</string>
+    <string name="upload">Upload</string>
     <string name="cancel">Cancel</string>
     <string name="set_change_photo">Set / Change Photo</string>
     <string name="delete_photo">Delete Photo</string>

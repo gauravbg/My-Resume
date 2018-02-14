@@ -116,14 +116,15 @@ public class ProfileReader {
     public void fetchImage(Context context, CircleImageView profileIV, String url) {
 
         if(url != null) {
-            StorageReference imageRef = storage.getReferenceFromUrl(url);
+            profileIV.setTag(null);
             Glide.with(context).load(url).into(profileIV);
+            profileIV.setTag(null);
         }
     }
 
     private void fetchPage(String pageId) {
 
-        pagesRef.child(pageId).addListenerForSingleValueEvent(new ValueEventListener() {
+            pagesRef.child(pageId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 PageDataParser dataParser = new PageDataParser(localFetchListener);
@@ -170,6 +171,7 @@ public class ProfileReader {
                         case "title": profile.setTitle(value); break;
                         case "username": profile.setUsername(value); break;
                         case "imageUrl": profile.setImageUrl(value); break;
+                        case "pdfUrl": profile.setPdfUrl(value); break;
                         default: break;
 
                     }
@@ -222,6 +224,7 @@ public class ProfileReader {
                     switch(child.getKey()) {
                         case "pageNumber": page.setPageNumber(((Long)child.getValue()).intValue()); break;
                         case "title": page.setTitle((String)child.getValue()); break;
+                        case "contactPage": page.setIsContactPage((boolean)child.getValue());
                         default: break;
 
                     }
@@ -284,11 +287,13 @@ public class ProfileReader {
                 switch (entry.getKey()) {
                     case "id": content.setId((String)entry.getValue()); break;
                     case "value": content.setValue((String)entry.getValue()); break;
-                    case "rating": content.setRating((long)entry.getValue()); break;
+                    case "value2": content.setValue2((String)entry.getValue()); break;
                     case "type":
                         switch((String)entry.getValue()) {
                             case "RATING": content.setType(Content.ContentType.RATING); break;
                             case "TEXT": content.setType(Content.ContentType.TEXT); break;
+                            case "CONTACT_TYPE": content.setType(Content.ContentType.CONTACT_TYPE); break;
+                            case "ADDITIONAL_CONTACT_TYPE": content.setType(Content.ContentType.ADDITIONAL_CONTACT_TYPE); break;
                             default: break;
                         }
                         break;

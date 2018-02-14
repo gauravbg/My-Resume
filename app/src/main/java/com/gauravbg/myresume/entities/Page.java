@@ -15,6 +15,7 @@ public class Page implements MyResumeEntity, Parcelable{
     private String id;
     private String title;
     private int pageNumber;
+    private boolean isContactPage;
     private List<Section> sections = new ArrayList<>();
 
     public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
@@ -34,6 +35,7 @@ public class Page implements MyResumeEntity, Parcelable{
         this.id = in.readString();
         this.title = in.readString();
         this.pageNumber = in.readInt();
+        this.isContactPage = in.readByte() != 0;
         this.sections = in.createTypedArrayList(Section.CREATOR);
 
     }
@@ -75,6 +77,14 @@ public class Page implements MyResumeEntity, Parcelable{
         this.sections = sections;
     }
 
+    public boolean isContactPage() {
+        return isContactPage;
+    }
+
+    public void setIsContactPage(boolean contactPage) {
+        this.isContactPage = contactPage;
+    }
+
     @Override
     public String getEntityType() {
         return MyResumeEntity.PAGE_TYPE;
@@ -92,6 +102,7 @@ public class Page implements MyResumeEntity, Parcelable{
         dest.writeString(this.id);
         dest.writeString(this.title);
         dest.writeInt(this.pageNumber);
+        dest.writeByte((byte) (this.isContactPage ? 1 : 0));
         dest.writeTypedList(this.sections);
 
     }

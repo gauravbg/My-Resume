@@ -1,17 +1,21 @@
 package com.gauravbg.myresume;
 
+import android.app.ActivityOptions;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
+import android.support.v4.util.Pair;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -86,8 +90,8 @@ public class SearchActivity extends AppCompatActivity {
 
 
     private void setupDevProfile() {
-        EditText devName = (EditText) findViewById(R.id.dev_name_et);
-        EditText devTitle = (EditText) findViewById(R.id.dev_title_et);
+        TextView devName = (TextView) findViewById(R.id.dev_name_et);
+        TextView devTitle = (TextView) findViewById(R.id.dev_title_et);
     }
 
 
@@ -101,9 +105,9 @@ public class SearchActivity extends AppCompatActivity {
         }
 
         public void setupView(String name, String url, String title, final String uid) {
-            EditText nameET = (EditText)mView.findViewById(R.id.name_et);
-            EditText titleET = (EditText)mView.findViewById(R.id.title_et);
-            CircleImageView imageIV = (CircleImageView) mView.findViewById(R.id.profile_image);
+            final TextView nameET = (TextView)mView.findViewById(R.id.name_et);
+            final TextView titleET = (TextView)mView.findViewById(R.id.title_et);
+            final CircleImageView imageIV = (CircleImageView) mView.findViewById(R.id.profile_image);
 
             nameET.setText(name);
             titleET.setText(title);

@@ -51,6 +51,7 @@ public class Profile implements MyResumeEntity, Parcelable {
     private String alternatePhoneNumber;
     private String address;
     private String imageUrl;
+    private String pdfUrl;
 
     private List<String> pages = new ArrayList<>();
 
@@ -139,6 +140,14 @@ public class Profile implements MyResumeEntity, Parcelable {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public String getPdfUrl() {
+        return pdfUrl;
+    }
+
+    public void setPdfUrl(String pdfUrl) {
+        this.pdfUrl = pdfUrl;
     }
 
 

@@ -11,6 +11,7 @@ public interface MyResumeEntity {
     String SECTION_TYPE = "section_type";
     String PAGE_TYPE = "page_type";
     String CONTENT_TYPE = "content_type";
+    String CONTACT_PAGE_TYPE = "contact_page_type";
 
     String getEntityType();
 

@@ -1,5 +1,7 @@
 package com.gauravbg.myresume;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -71,16 +73,20 @@ public class PageFragment extends Fragment {
 
     }
 
-    private Content getDefaultContent() {
+    private Content getDefaultContent(boolean forContactPage) {
         Content content = new Content();
-        content.setType(Content.ContentType.TEXT);
+        if(forContactPage) {
+            content.setType(Content.ContentType.ADDITIONAL_CONTACT_TYPE);
+        } else {
+            content.setType(Content.ContentType.TEXT);
+        }
         return content;
     }
 
     private Section getDefaultSection() {
         Section section = new Section();
         List<Content> allContent = new ArrayList<>();
-        allContent.add(getDefaultContent());
+        allContent.add(getDefaultContent(false));
         return section;
     }
 
@@ -89,14 +95,20 @@ public class PageFragment extends Fragment {
 
         if(isEditMode) {
             sectionLayout.findViewById(R.id.editor_layout).setVisibility(View.VISIBLE);
+
             ImageButton addContentBtn = (ImageButton) sectionLayout.findViewById(R.id.add_content_btn);
             ImageButton addSubsectionBtn = (ImageButton) sectionLayout.findViewById(R.id.add_subsection_btn);
             ImageButton deleteSectionBtn = (ImageButton) sectionLayout.findViewById(R.id.delete_section_btn);
 
+            if(pageData.isContactPage()) {
+                addSubsectionBtn.setVisibility(View.GONE);
+                deleteSectionBtn.setVisibility(View.GONE);
+            }
+
             addContentBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Content newContent = getDefaultContent();
+                    Content newContent = getDefaultContent(pageData.isContactPage());
                     if(section.getContents() == null) {
                         List<Content> allContent = new ArrayList<>();
                         allContent.add(newContent);
@@ -165,7 +177,7 @@ public class PageFragment extends Fragment {
 
 
         if ((section.getTitle() == null || TextUtils.isEmpty(section.getTitle())) && (section.getTimeline() == null || TextUtils.isEmpty(section.getTimeline()))) {
-            if(isEditMode) {
+            if(isEditMode && !pageData.isContactPage()) {
                 sectionLayout.findViewById(R.id.section_title_container).setVisibility(View.VISIBLE);
             } else {
                 sectionLayout.findViewById(R.id.section_title_container).setVisibility(View.GONE);
@@ -186,9 +198,9 @@ public class PageFragment extends Fragment {
                 title.setText(section.getTitle());
 
                 if(isEditMode) {
-                    title.setEnabled(true);
+                    title.setFocusable(true);
                 } else {
-                    title.setEnabled(false);
+                    title.setFocusable(false);
                 }
 
             } else {
@@ -203,9 +215,9 @@ public class PageFragment extends Fragment {
             if (section.getTimeline() != null && !TextUtils.isEmpty(section.getTimeline())) {
                 timeline.setText(section.getTimeline());
                 if(isEditMode) {
-                    timeline.setEnabled(true);
+                    timeline.setFocusable(true);
                 } else {
-                    timeline.setEnabled(false);
+                    timeline.setFocusable(false);
                 }
 
             } else {
@@ -229,7 +241,7 @@ public class PageFragment extends Fragment {
             }
         });
         if(section.getSummary() == null && TextUtils.isEmpty(section.getSummary())) {
-            if(isEditMode) {
+            if(isEditMode && !pageData.isContactPage()) {
                 sectionLayout.findViewById(R.id.section_summary_container).setVisibility(View.VISIBLE);
             } else {
                 sectionLayout.findViewById(R.id.section_summary_container).setVisibility(View.GONE);
@@ -273,9 +285,16 @@ public class PageFragment extends Fragment {
 
         LinearLayout contentLayout = (LinearLayout) LayoutInflater.from(getContext()).inflate(R.layout.content_layout, null);
         if(isEditMode) {
-            contentLayout.findViewById(R.id.editor_layout).setVisibility(View.VISIBLE);
+            if(content.getType() != Content.ContentType.CONTACT_TYPE) {
+                contentLayout.findViewById(R.id.editor_layout).setVisibility(View.VISIBLE);
+            }
             ImageButton editContentBtn = (ImageButton) contentLayout.findViewById(R.id.edit_content_btn);
             ImageButton deleteContentBtn = (ImageButton) contentLayout.findViewById(R.id.delete_content_btn);
+
+            if(content.getType() == Content.ContentType.ADDITIONAL_CONTACT_TYPE) {
+                editContentBtn.setVisibility(View.GONE);
+            }
+
 
             editContentBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -286,7 +305,7 @@ public class PageFragment extends Fragment {
                     } else {
                         content.setType(Content.ContentType.RATING);
                         content.setValue("");
-                        content.setRating(5);
+                        content.setValue2("5");
                     }
                     onResume();
                 }
@@ -306,6 +325,7 @@ public class PageFragment extends Fragment {
 
         if(content.getType() == Content.ContentType.RATING) {
             contentLayout.findViewById(R.id.text_content_text).setVisibility(View.GONE);
+            contentLayout.findViewById(R.id.contact_content_line).setVisibility(View.GONE);
             final EditText contentText = (EditText) contentLayout.findViewById(R.id.rating_content_text);
             contentText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 
@@ -319,17 +339,82 @@ public class PageFragment extends Fragment {
             contentText.setText(content.getValue());
 
             RatingBar rating = (RatingBar) contentLayout.findViewById(R.id.rating_content_rating);
-            rating.setRating(content.getRating());
+            rating.setRating(Integer.parseInt(content.getValue2()));
             if(isEditMode) {
-               contentText.setEnabled(true);
+               contentText.setFocusable(true);
                rating.setIsIndicator(false);
             } else {
                 rating.setIsIndicator(true);
-                contentText.setEnabled(false);
+                contentText.setFocusable(false);
             }
+        } else if(content.getType() == Content.ContentType.CONTACT_TYPE || content.getType() == Content.ContentType.ADDITIONAL_CONTACT_TYPE) {
+            contentLayout.findViewById(R.id.rating_content_line).setVisibility(View.GONE);
+            contentLayout.findViewById(R.id.text_content_text).setVisibility(View.GONE);
+
+            final EditText nameET = (EditText) contentLayout.findViewById(R.id.contact_content_name);
+            final EditText textET = (EditText) contentLayout.findViewById(R.id.contact_content_text);
+            nameET.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    if (!hasFocus) {
+                        content.setValue(nameET.getText().toString());
+                    }
+                }
+            });
+
+            textET.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    if (!hasFocus) {
+                        content.setValue2(textET.getText().toString());
+                    }
+                }
+            });
+
+
+
+            if(content.getType() == Content.ContentType.ADDITIONAL_CONTACT_TYPE) {
+                if(!isEditMode) {
+                    textET.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            String url = textET.getText().toString();
+                            if (url.startsWith("http://") || url.startsWith("https://")) {
+                                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                                startActivity(browserIntent);
+                            }
+
+                        }
+                    });
+                }
+
+
+            }
+
+            nameET.setText(content.getValue());
+            textET.setText(content.getValue2());
+
+            if(isEditMode) {
+                textET.setFocusable(true);
+                if(content.getType() == Content.ContentType.ADDITIONAL_CONTACT_TYPE) {
+                    nameET.setFocusable(true);
+                } else {
+                    nameET.setFocusable(false);
+                }
+            } else {
+                textET.setFocusable(false);
+                nameET.setFocusable(false);
+                if(content.getType() == Content.ContentType.ADDITIONAL_CONTACT_TYPE) {
+                    textET.setEnabled(true);
+                }
+            }
+
         } else {
 
             contentLayout.findViewById(R.id.rating_content_line).setVisibility(View.GONE);
+            contentLayout.findViewById(R.id.contact_content_line).setVisibility(View.GONE);
             if(isEditMode) {
                 final EditText textContent = (EditText) contentLayout.findViewById(R.id.text_content_et);
                 textContent.setOnFocusChangeListener(new View.OnFocusChangeListener() {

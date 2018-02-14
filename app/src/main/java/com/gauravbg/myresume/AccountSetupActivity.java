@@ -394,7 +394,6 @@ public class AccountSetupActivity extends AppCompatActivity implements GoogleApi
 
             accountSetupProgressDialog = ProgressDialog.show(AccountSetupActivity.this, "Setting up account", "Please wait...", true, false);
 
-
             final Profile profile = new Profile();
             profile.setName(name);
             profile.setUsername(username);
@@ -403,6 +402,7 @@ public class AccountSetupActivity extends AppCompatActivity implements GoogleApi
             profile.setAddress(address);
             profile.setTitle(title);
             profile.setLinks(additionalLinks);
+            profile.setId(uid);
             if(profileImage.getTag() != null) {
                 FirebaseStorage storage = FirebaseStorage.getInstance();
                 StorageReference storageRef = storage.getReference();
@@ -410,7 +410,7 @@ public class AccountSetupActivity extends AppCompatActivity implements GoogleApi
                         .setContentType("image/jpeg")
                         .build();
 
-                UploadTask uploadTask = storageRef.child("Profile_Images/"+uid+".jpg").putFile((Uri)profileImage.getTag(), metadata);
+                UploadTask uploadTask = storageRef.child("Profile_Images/"+ uid + "_" + System.currentTimeMillis() + ".jpg").putFile((Uri)profileImage.getTag(), metadata);
 
                 uploadTask.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
                     @Override
@@ -438,14 +438,14 @@ public class AccountSetupActivity extends AppCompatActivity implements GoogleApi
                         profile.setImageUrl(downloadUrl.toString());
                         List<MyResumeEntity> entities = new ArrayList<>();
                         entities.add(profile);
-                        entities.add(MyProfileEntityCreator.getContactPage(profile));
+                        entities.add(MyProfileEntityCreator.getContactPage(profile, 0));
                         profileWriter.writeProfile(entities, uid);
                     }
                 });
             } else {
                 List<MyResumeEntity> entities = new ArrayList<>();
                 entities.add(profile);
-                entities.add(MyProfileEntityCreator.getContactPage(profile));
+                entities.add(MyProfileEntityCreator.getContactPage(profile, 0));
                 profileWriter.writeProfile(entities, uid);
             }
 

@@ -74,6 +74,7 @@
                     android:layout_marginRight="20dp"
                     android:src="@mipmap/ic_account_circle_white_48dp"
                     app:civ_border_color="@color/accent"
+                    android:transitionName="imageTransition"
                     app:civ_border_width="2dp" />
 
                 <EditText
@@ -84,6 +85,7 @@
                     android:background="@null"
                     android:layout_margin="5dp"
                     android:layout_toRightOf="@id/profile_image"
+                    android:transitionName="nameTransition"
                     android:textColor="@color/text_enabled"
                     />
 
@@ -96,6 +98,7 @@
                     android:textColor="@color/text_enabled"
                     android:layout_margin="5dp"
                     android:layout_below="@+id/name_et"
+                    android:transitionName="titleTransition"
                     android:layout_toRightOf="@id/profile_image"/>
 
             </RelativeLayout>

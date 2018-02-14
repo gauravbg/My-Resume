@@ -58,7 +58,7 @@ public class MyProfileEntityCreator {
         pages.add(getIndustryExperiencePage());
         pages.add(getAcademicProjects());
         pages.add(getAcheivementsPage());
-        pages.add(getContactPage(getMyProfile()));
+        pages.add(getContactPage(getMyProfile(), 5));
         return pages;
     }
 
@@ -87,7 +87,7 @@ public class MyProfileEntityCreator {
         for (String skill: skillsText) {
             Content content =  new Content();
             content.setType(Content.ContentType.RATING);
-            content.setRating(9);
+            content.setValue2("5");
             content.setValue(skill);
             programmingLangContent.add(content);
         }
@@ -103,7 +103,7 @@ public class MyProfileEntityCreator {
         for (String skill: webskillsText) {
             Content content =  new Content();
             content.setType(Content.ContentType.RATING);
-            content.setRating(9);
+            content.setValue2("5");
             content.setValue(skill);
             webContent.add(content);
         }
@@ -119,7 +119,7 @@ public class MyProfileEntityCreator {
         for (String skill: dbskillsText) {
             Content content =  new Content();
             content.setType(Content.ContentType.RATING);
-            content.setRating(9);
+            content.setValue2("5");
             content.setValue(skill);
             dbContent.add(content);
         }
@@ -135,7 +135,7 @@ public class MyProfileEntityCreator {
         for (String skill: platformskillsText) {
             Content content =  new Content();
             content.setType(Content.ContentType.RATING);
-            content.setRating(9);
+            content.setValue2("5");
             content.setValue(skill);
             platformContent.add(content);
         }
@@ -152,7 +152,7 @@ public class MyProfileEntityCreator {
         for (String skill: swkillsText) {
             Content content =  new Content();
             content.setType(Content.ContentType.RATING);
-            content.setRating(9);
+            content.setValue2("5");
             content.setValue(skill);
             swContent.add(content);
         }
@@ -210,7 +210,7 @@ public class MyProfileEntityCreator {
         for (String skill: course) {
             Content content =  new Content();
             content.setType(Content.ContentType.RATING);
-            content.setRating(9);
+            content.setValue2("5");
             content.setValue(skill);
             courseContent.add(content);
         }
@@ -331,34 +331,39 @@ public class MyProfileEntityCreator {
 
     }
 
-    public static Page getContactPage(Profile profile) {
+    public static Page getContactPage(Profile profile, int pageNumber) {
         Page page = new Page();
+        page.setIsContactPage(true);
         page.setTitle("Contact");
-        page.setPageNumber(5);
+        page.setPageNumber(pageNumber);
         Section section = new Section();
         section.setNumber(0);
         List<Content> contents = new ArrayList<>();
 
         //address
         Content address = new Content();
-        address.setType(Content.ContentType.TEXT);
-        address.setValue("Address: " + profile.getAddress());
+        address.setType(Content.ContentType.CONTACT_TYPE);
+        address.setValue("Address");
+        address.setValue2(profile.getAddress());
         contents.add(address);
         //phone
         Content phone = new Content();
-        phone.setType(Content.ContentType.TEXT);
-        phone.setValue("Phone Number: " + profile.getPhoneNumber());
+        phone.setType(Content.ContentType.CONTACT_TYPE);
+        phone.setValue("Phone Number");
+        phone.setValue2(profile.getPhoneNumber());
         contents.add(phone);
         //email
         Content email = new Content();
-        email.setType(Content.ContentType.TEXT);
-        email.setValue("Email: " + profile.getEmail());
+        email.setType(Content.ContentType.CONTACT_TYPE);
+        email.setValue("Email");
+        email.setValue2(profile.getEmail());
         contents.add(email);
         //other
         for (Link link : profile.getLinks()) {
             Content content = new Content();
-            content.setType(Content.ContentType.TEXT);
-            content.setValue(link.getName() + ": " + link.getUrl());
+            content.setType(Content.ContentType.ADDITIONAL_CONTACT_TYPE);
+            content.setValue(link.getName());
+            content.setValue2(link.getUrl());
             contents.add(content);
         }
 

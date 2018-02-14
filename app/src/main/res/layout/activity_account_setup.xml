@@ -69,6 +69,7 @@
                         android:id="@+id/name_et"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:inputType="textPersonName"
                         android:hint="@string/hint_name" />
 
                 </android.support.design.widget.TextInputLayout>
@@ -114,6 +115,7 @@
                         android:id="@+id/email_et"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:inputType="textEmailAddress"
                         android:hint="@string/hint_email" />
                 </android.support.design.widget.TextInputLayout>
 
@@ -128,6 +130,7 @@
                         android:id="@+id/phonenumber_et"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:inputType="phone"
                         android:hint="@string/hint_phonenumber" />
                 </android.support.design.widget.TextInputLayout>
 
@@ -142,6 +145,7 @@
                         android:id="@+id/address_et"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:inputType="textPostalAddress"
                         android:hint="@string/hint_address" />
                 </android.support.design.widget.TextInputLayout>
 

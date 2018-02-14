@@ -13,10 +13,11 @@
         android:layout_centerVertical="true"
         android:layout_marginRight="10dp"
         android:src="@mipmap/ic_account_circle_white_48dp"
+        android:transitionName="imageTransition"
         app:civ_border_color="@color/accent"
         app:civ_border_width="2dp" />
 
-    <EditText
+    <TextView
         android:id="@+id/name_et"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -24,10 +25,11 @@
         android:layout_toRightOf="@id/profile_image"
         android:background="@null"
         android:textColor="@color/text_enabled"
-        android:enabled="false"
+        android:inputType="none"
+        android:transitionName="nameTransition"
         android:textSize="20dp" />
 
-    <EditText
+    <TextView
         android:id="@+id/title_et"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -36,7 +38,8 @@
         android:layout_toRightOf="@id/profile_image"
         android:background="@null"
         android:textColor="@color/text_enabled"
-        android:enabled="false"
+        android:transitionName="titleTransition"
+        android:inputType="none"
         android:textSize="15dp" />
 
 </RelativeLayout>

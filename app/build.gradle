@@ -7,8 +7,8 @@ android {
         applicationId "com.gauravbg.myresume"
         minSdkVersion 19
         targetSdkVersion 25
-        versionCode 5
-        versionName "5"
+        versionCode 7
+        versionName "7"
         multiDexEnabled = true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
@@ -47,6 +47,7 @@ dependencies {
     compile 'com.github.bluejamesbond:textjustify-android:2.1.6'
     compile 'com.github.medyo:fancybuttons:1.8.4'
     compile 'com.cepheuen.elegant-number-button:lib:1.0.2'
+    compile 'com.github.barteksc:android-pdf-viewer:2.8.2'
 
 }
 

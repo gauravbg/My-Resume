@@ -46,7 +46,7 @@
             app:civ_border_color="@color/accent"
             app:civ_border_width="2dp" />
 
-        <EditText
+        <TextView
             android:id="@+id/dev_name_et"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -57,7 +57,7 @@
             android:enabled="false"
             android:textSize="20dp" />
 
-        <EditText
+        <TextView
             android:id="@+id/dev_title_et"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

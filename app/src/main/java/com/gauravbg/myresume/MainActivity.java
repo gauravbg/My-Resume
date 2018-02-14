@@ -6,9 +6,13 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.PersistableBundle;
 import android.provider.MediaStore;
+import android.provider.OpenableColumns;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -33,19 +37,31 @@ import com.gauravbg.myresume.entities.MyResumeEntity;
 import com.gauravbg.myresume.entities.Page;
 import com.gauravbg.myresume.entities.Profile;
 import com.gauravbg.myresume.entities.Section;
+import com.gauravbg.myresume.firebase.FirebaseManager;
 import com.gauravbg.myresume.firebase.ProfileReader;
 import com.gauravbg.myresume.firebase.ProfileWriter;
 import com.gauravbg.myresume.utils.MyProfileEntityCreator;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnPausedListener;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageMetadata;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
 
 import org.w3c.dom.Text;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -63,14 +79,17 @@ public class MainActivity extends AppCompatActivity{
     private Map<String, MyResumeEntity> allEntities;
 
     private static final int MY_PERMISSIONS_REQUEST_CALL = 101;
+    private static final int MY_PERMISSIONS_REQUEST_EXTERNAL_WRITE = 501;
     private static final int MY_PERMISSIONS_REQUEST_MSG = 301;
     private static final int PICK_IMAGE = 201;
+    private static final int PICK_PDF_FILE = 401;
 
 
     public static String UID = "USER_ID";
     public static String IS_MY_PROFILE = "MY_PROFILE";
 
     private boolean isEditMode = false;
+    private boolean isPhotoChanged = false;
 
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener stateListener;
@@ -81,6 +100,7 @@ public class MainActivity extends AppCompatActivity{
 
     private CircleImageView profileIV;
     private AlertDialog photoPickerDialog;
+    private AlertDialog pdfUploadDialog;
     private AlertDialog pageRenameDialog;
     private AlertDialog saveConfirmationDialog;
     private AlertDialog cancelConfirmationDialog;
@@ -164,12 +184,60 @@ public class MainActivity extends AppCompatActivity{
         invalidateOptionsMenu();
 
         if(saveAndRefresh) {
-            List<MyResumeEntity> entities = new ArrayList<>();
+            final List<MyResumeEntity> entities = new ArrayList<>();
             for(Map.Entry<String, MyResumeEntity> entry: allEntities.entrySet()) {
-                entities.add(entry.getValue());
+                if(entry.getValue().getEntityType() == MyResumeEntity.PROFILE_TYPE) {
+                    entities.add(0, entry.getValue());
+                } else {
+                    entities.add(entry.getValue());
+                }
             }
             isLoading = true;
-            profileWriter.writeProfile(entities, PROFILE_ID);
+            if(isPhotoChanged) {
+                FirebaseStorage storage = FirebaseStorage.getInstance();
+                final StorageReference storageRef = storage.getReference();
+                StorageMetadata metadata = new StorageMetadata.Builder()
+                        .setContentType("image/jpeg")
+                        .build();
+
+                if(profileIV.getTag() != null) {
+                    UploadTask uploadTask = storageRef.child("Profile_Images/"+ PROFILE_ID + "_" + System.currentTimeMillis() + ".jpg").putFile((Uri)profileIV.getTag(), metadata);
+
+                    uploadTask.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                            double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+
+                        }
+                    }).addOnPausedListener(new OnPausedListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onPaused(UploadTask.TaskSnapshot taskSnapshot) {
+
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception exception) {
+                            Toast.makeText(MainActivity.this, "Image save failed", Toast.LENGTH_LONG).show();
+                            profileWriter.writeProfile(entities, PROFILE_ID);
+                        }
+                    }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                            Profile prof = (Profile) entities.get(0);
+                            prof.setImageUrl(downloadUrl.toString());
+                            profileWriter.writeProfile(entities, PROFILE_ID);
+                        }
+                    });
+                } else {
+                    Profile prof = (Profile) entities.get(0);
+                    prof.setImageUrl(null);
+                    profileWriter.writeProfile(entities, PROFILE_ID);
+                }
+
+            } else {
+                profileWriter.writeProfile(entities, PROFILE_ID);
+            }
 
         } else {
             isLoading = true;
@@ -194,6 +262,7 @@ public class MainActivity extends AppCompatActivity{
         if(!isMyProfile) {
             mMenu.findItem(R.id.edit).setVisible(false);
             mMenu.findItem(R.id.sign_out).setVisible(false);
+            mMenu.findItem(R.id.upload_pdf).setVisible(false);
         }
         return true;
 
@@ -207,6 +276,97 @@ public class MainActivity extends AppCompatActivity{
             if (resultCode == RESULT_OK) {
                 profileIV.setImageURI(data.getData());
                 profileIV.setTag(data.getData());
+                isPhotoChanged = true;
+            } else {
+
+            }
+        } else if(requestCode == PICK_PDF_FILE) {
+            if (resultCode == RESULT_OK) {
+                final Uri uri = data.getData();
+                String uriString = uri.toString();
+                File myFile = new File(uriString);
+                String path = myFile.getAbsolutePath();
+                String displayName = null;
+
+                if (uriString.startsWith("content://")) {
+                    Cursor cursor = null;
+                    try {
+                        cursor = MainActivity.this.getContentResolver().query(uri, null, null, null, null);
+                        if (cursor != null && cursor.moveToFirst()) {
+                            displayName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                        }
+                    } finally {
+                        cursor.close();
+                    }
+                } else if (uriString.startsWith("file://")) {
+                    displayName = myFile.getName();
+                }
+                final View view = getLayoutInflater().inflate(R.layout.upload_dialog_layout, null);
+                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(MainActivity.this);
+                final FancyButton uploadBtn = (FancyButton) view.findViewById(R.id.upload_button);
+                final FancyButton cancelBtn = (FancyButton) view.findViewById(R.id.cancel_button);
+                final LinearLayout loadingLayout = (LinearLayout) view.findViewById(R.id.loading_layout);
+                TextView filenameTxt = (TextView) view.findViewById(R.id.pdf_name_txt);
+                filenameTxt.setText(displayName);
+                FirebaseStorage storage = FirebaseStorage.getInstance();
+                final StorageReference storageRef = storage.getReference();
+                final StorageMetadata metadata = new StorageMetadata.Builder()
+                        .setContentType("application/pdf")
+                        .build();
+
+                uploadBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        uploadBtn.setEnabled(false);
+                        cancelBtn.setEnabled(false);
+                        loadingLayout.setVisibility(View.VISIBLE);
+
+                        UploadTask uploadTask = storageRef.child("Resume_PDFs/"+ PROFILE_ID + "_" + System.currentTimeMillis() + ".pdf").putFile(uri, metadata);
+
+                        uploadTask.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                                double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+
+                            }
+                        }).addOnPausedListener(new OnPausedListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onPaused(UploadTask.TaskSnapshot taskSnapshot) {
+
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception exception) {
+                                Toast.makeText(MainActivity.this, "Upload failed", Toast.LENGTH_LONG).show();
+                                uploadBtn.setEnabled(true);
+                                cancelBtn.setEnabled(true);
+                            }
+                        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                                DatabaseReference profileRef = FirebaseManager.getDBReference(FirebaseManager.DBTable.PROFILES);
+                                profileRef.child(PROFILE_ID).child("pdfUrl").setValue(downloadUrl.toString());
+                                profile.setPdfUrl(downloadUrl.toString());
+                                uploadBtn.setEnabled(true);
+                                cancelBtn.setEnabled(true);
+                                pdfUploadDialog.dismiss();
+                                Toast.makeText(MainActivity.this, "Upload Successful", Toast.LENGTH_LONG).show();
+
+                            }
+                        });
+                    }
+                });
+
+                cancelBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        pdfUploadDialog.dismiss();
+                    }
+                });
+                dialogBuilder.setView(view);
+                pdfUploadDialog = dialogBuilder.create();
+                pdfUploadDialog.show();
             } else {
 
             }
@@ -226,6 +386,12 @@ public class MainActivity extends AppCompatActivity{
                 return true;
             case R.id.edit:
                 switchEditMode(true);
+                return true;
+            case R.id.upload_pdf:
+                handlePdfUpload();
+                return true;
+            case R.id.download_pdf:
+                handlePdfDownload();
                 return true;
             case R.id.add_page:
                 Page defaultPage = getDefaultPage();
@@ -278,6 +444,53 @@ public class MainActivity extends AppCompatActivity{
                 return super.onOptionsItemSelected(item);
         }
 
+    }
+
+    private void handlePdfDownload() {
+        if ( ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE ) != PackageManager.PERMISSION_GRANTED ) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                Toast.makeText(MainActivity.this, "The app needs permission to download pdf", Toast.LENGTH_LONG).show();
+            } else {
+                ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_EXTERNAL_WRITE);
+            }
+
+        } else {
+            if(profile.getPdfUrl() != null) {
+                FirebaseStorage storage = FirebaseStorage.getInstance();
+                StorageReference pdfRef = storage.getReferenceFromUrl(profile.getPdfUrl());
+
+                File rootPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+                if(!rootPath.exists()) {
+                    rootPath.mkdirs();
+                }
+
+                File localFile = new File(rootPath,profile.getName() + ".pdf");
+                Toast.makeText(MainActivity.this, "Download in progress...", Toast.LENGTH_LONG).show();
+                pdfRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                        Toast.makeText(MainActivity.this, "Download Completed. Check Downloads Folder", Toast.LENGTH_LONG).show();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        Toast.makeText(MainActivity.this, "Download Failed", Toast.LENGTH_LONG).show();
+                    }
+                });
+            } else {
+                Toast.makeText(MainActivity.this, "No PDF available for download. Please Upload your PDF.", Toast.LENGTH_LONG).show();
+            }
+        }
+
+
+
+    }
+
+    private void handlePdfUpload() {
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        intent.setType("application/pdf");
+        startActivityForResult(intent, PICK_PDF_FILE);
     }
 
     private void showCancelDialog() {
@@ -348,6 +561,7 @@ public class MainActivity extends AppCompatActivity{
         Page page = new Page();
         page.setId(String.valueOf(new Date().getTime()));
         page.setTitle("New Page");
+        page.setPageNumber(0);
         Section section = new Section();
         section.setNumber(0);
         changePageNumbers(true, -1);
@@ -376,7 +590,7 @@ public class MainActivity extends AppCompatActivity{
             for(Map.Entry<String, MyResumeEntity> entry: allEntities.entrySet()) {
                 if(entry.getValue().getEntityType().equals(MyResumeEntity.PAGE_TYPE)){
                     Page page = (Page) entry.getValue();
-                    if(page.getPageNumber() == pos) {
+                    if(page.getPageNumber() == pos && !page.isContactPage()) {
                         showRenameDialog(page);
                     }
                 }
@@ -442,10 +656,21 @@ public class MainActivity extends AppCompatActivity{
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        if(isLoading) {
-            return false;
-        }
+//        if(isLoading) {
+//            return false;
+//        }
         return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        if(isEditMode) {
+            switchEditMode(false);
+            findViewById(R.id.full_content_layout).setVisibility(View.GONE);
+            findViewById(R.id.progress_layout).setVisibility(View.VISIBLE);
+            refreshUI(false);
+        }
+        super.onSaveInstanceState(outState, outPersistentState);
     }
 
     private void showProfile() {
@@ -453,10 +678,11 @@ public class MainActivity extends AppCompatActivity{
         findViewById(R.id.full_content_layout).setVisibility(View.VISIBLE);
         findViewById(R.id.progress_layout).setVisibility(View.GONE);
         isLoading = false;
+        isPhotoChanged = false;
         invalidateOptionsMenu();
 
-        EditText name_et = (EditText) findViewById(R.id.name_et);
-        EditText title_et = (EditText) findViewById(R.id.title_et);
+        final EditText name_et = (EditText) findViewById(R.id.name_et);
+        final EditText title_et = (EditText) findViewById(R.id.title_et);
         name_et.setEnabled(false);
         title_et.setEnabled(false);
 
@@ -481,8 +707,9 @@ public class MainActivity extends AppCompatActivity{
                 deletePhotoBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        profileIV.setBackground(getResources().getDrawable(R.mipmap.ic_account_circle_white_48dp));
+                        profileIV.setImageResource(R.mipmap.ic_account_circle_white_48dp);
                         photoPickerDialog.dismiss();
+                        isPhotoChanged = true;
                     }
                 });
                 dialogBuilder.setView(view);
@@ -502,6 +729,25 @@ public class MainActivity extends AppCompatActivity{
         profileReader.fetchImage(this, profileIV, profile.getImageUrl());
         name_et.setText(profile.getName());
         title_et.setText(profile.getTitle());
+        name_et.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    profile.setName(name_et.getText().toString());
+                }
+            }
+        });
+
+        title_et.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    profile.setTitle(title_et.getText().toString());
+                }
+            }
+        });
         ImageButton call_button = (ImageButton) findViewById(R.id.call_button);
         ImageButton email_button = (ImageButton) findViewById(R.id.email_button);
         ImageButton msg_button = (ImageButton) findViewById(R.id.message_button);
@@ -593,6 +839,7 @@ public class MainActivity extends AppCompatActivity{
         final EditText pageNumberET = (EditText) view.findViewById(R.id.page_number_et);
         final CheckBox markDeleteCb = (CheckBox) view.findViewById(R.id.delete_cb);
         final ElegantNumberButton numberBtn = (ElegantNumberButton) view.findViewById(R.id.number_button);
+        view.findViewById(R.id.delete_mark_layout).setVisibility(View.GONE);
         FancyButton saveBtn = (FancyButton) view.findViewById(R.id.save_button);
         FancyButton cancelBtn = (FancyButton) view.findViewById(R.id.cancel_button);
         pageNameET.setText(page.getTitle());

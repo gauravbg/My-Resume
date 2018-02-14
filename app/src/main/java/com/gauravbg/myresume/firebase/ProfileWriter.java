@@ -2,9 +2,12 @@ package com.gauravbg.myresume.firebase;
 
 import android.util.Log;
 
+import com.gauravbg.myresume.entities.Content;
+import com.gauravbg.myresume.entities.Link;
 import com.gauravbg.myresume.entities.MyResumeEntity;
 import com.gauravbg.myresume.entities.Page;
 import com.gauravbg.myresume.entities.Profile;
+import com.gauravbg.myresume.entities.Section;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 
@@ -30,39 +33,41 @@ public class ProfileWriter {
         this.listener = listener;
     }
 
-    private DatabaseReference.CompletionListener completionListener = new DatabaseReference.CompletionListener() {
-
-        private List<String> pageIds = new ArrayList<>();
-        @Override
-        public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-            if(databaseError != null) {
-                if(listener != null) {
-                    listener.onEntitySaveFailed(databaseError);
-                }
-            } else {
-                saveEntityCounter++;
-                if(saveEntityCounter == saveEntityCount-1) {
-                    pageIds.add(databaseReference.getKey());
-                    profile.setPages(pageIds);
-                    profileRef.child(profileId).setValue(profile, completionListener);
-                } else if(saveEntityCounter == saveEntityCount) {
-                    if(listener != null) {
-                        listener.onEntitySaved(databaseReference);
-                    }
-                } else {
-                    pageIds.add(databaseReference.getKey());
-                }
-            }
-
-        }
-
-    };
+    private DatabaseReference.CompletionListener completionListener;
 
 
 
     //TODO: Needs profile to be the first entity. Fix this Logic
     public void writeProfile(List<MyResumeEntity> entities, String uid) {
 
+        completionListener = new DatabaseReference.CompletionListener() {
+
+            private List<String> pageIds = new ArrayList<>();
+
+            @Override
+            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                if(databaseError != null) {
+                    if(listener != null) {
+                        listener.onEntitySaveFailed(databaseError);
+                    }
+                } else {
+                    saveEntityCounter++;
+                    if(saveEntityCounter == saveEntityCount-1) {
+                        pageIds.add(databaseReference.getKey());
+                        profile.setPages(pageIds);
+                        profileRef.child(profileId).setValue(profile, completionListener);
+                    } else if(saveEntityCounter == saveEntityCount) {
+                        if(listener != null) {
+                            listener.onEntitySaved(databaseReference);
+                        }
+                    } else {
+                        pageIds.add(databaseReference.getKey());
+                    }
+                }
+
+            }
+
+        };
         for(MyResumeEntity entity: entities) {
             if(entity.getEntityType() == MyResumeEntity.PAGE_TYPE) {
                 Page page = (Page) entity;
@@ -82,6 +87,29 @@ public class ProfileWriter {
             if(entity.getEntityType().equals(MyResumeEntity.PROFILE_TYPE)) {
                 this.profile = (Profile) entity;
             } else {
+                Page page = (Page) entity;
+                if(page.isContactPage()) {
+                    Section defaultSection = page.getSections().get(0);
+                    for(Content content: defaultSection.getContents()) {
+                        if(content.getValue().equals("Email")) {
+                            this.profile.setEmail(content.getValue2());
+                        } else if(content.getValue().equals("Address")) {
+                            this.profile.setAddress(content.getValue2());
+                        } else if(content.getValue().equals("Phone Number")) {
+                            this.profile.setPhoneNumber(content.getValue2());
+                        }
+
+                        profile.getLinks().clear();
+                        List<Link> links = new ArrayList<>();
+                        if(content.getType() == Content.ContentType.ADDITIONAL_CONTACT_TYPE) {
+                            Link link = new Link();
+                            link.setName(content.getValue());
+                            link.setUrl(content.getValue2());
+                            links.add(link);
+                        }
+                        profile.setLinks(links);
+                    }
+                }
                 pagesRef.push().setValue(entity, completionListener);
             }
         }
