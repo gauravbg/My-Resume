@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity{
     private String PROFILE_ID = "-L1WI0X02u4rIV1xltPV";
     private boolean isMyProfile = false;
     private final String LOG = getClass().getCanonicalName();
-    private Map<String, MyResumeEntity> allEntities;
+    private Map<String, MyResumeEntity> allEntities = new HashMap<>();
 
     private static final int MY_PERMISSIONS_REQUEST_CALL = 101;
     private static final int MY_PERMISSIONS_REQUEST_EXTERNAL_WRITE = 501;
@@ -87,6 +87,9 @@ public class MainActivity extends AppCompatActivity{
 
     public static String UID = "USER_ID";
     public static String IS_MY_PROFILE = "MY_PROFILE";
+    public static String IS_EDIT_MODE_KEY = "IS_EDIT_MODE_KEY";
+    public static String ALL_ENTITIES_VALUE_KEY = "ALL_ENTITIES_VALUE_KEY";
+    public static String ALL_ENTITIES_KEY_KEY = "ALL_ENTITIES_KEY_KEY";
 
     private boolean isEditMode = false;
     private boolean isPhotoChanged = false;
@@ -111,6 +114,8 @@ public class MainActivity extends AppCompatActivity{
     private ViewPager viewPager;
     private SmartTabLayout viewPagerTab;
 
+    public boolean isRunning = false;
+
     ProfileReader profileReader = new ProfileReader(new ProfileReader.EntityFetchListener() {
         @Override
         public void onEntityFetched(Map<String, MyResumeEntity> entities) {
@@ -122,7 +127,6 @@ public class MainActivity extends AppCompatActivity{
         public void onEntityFetchFailed(DatabaseError databaseError) {
             Log.e(LOG, "profile not read!:" + databaseError.getMessage());
             isLoading = false;
-            invalidateOptionsMenu();
         }
     });
 
@@ -148,17 +152,13 @@ public class MainActivity extends AppCompatActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        isRunning = true;
         setContentView(R.layout.activity_main);
         mAuth = FirebaseAuth.getInstance();
 
         PROFILE_ID = getIntent().getStringExtra(UID);
         isMyProfile = getIntent().getBooleanExtra(IS_MY_PROFILE, false);
 
-        findViewById(R.id.full_content_layout).setVisibility(View.GONE);
-        findViewById(R.id.progress_layout).setVisibility(View.VISIBLE);
-
-        isLoading = true;
-        profileReader.fetchProfile(PROFILE_ID);
         stateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -171,19 +171,37 @@ public class MainActivity extends AppCompatActivity{
                         progressDialog.dismiss();
                     }
                     finish();
-//                    Intent intent = new Intent(MainActivity.this, IntroActivity.class);
-//                    intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-//                    startActivity(intent);
                 }
             }
         };
+        if(savedInstanceState != null) {
+            isEditMode = savedInstanceState.getBoolean(IS_EDIT_MODE_KEY);
+            ArrayList<MyResumeEntity> entities = savedInstanceState.getParcelableArrayList(ALL_ENTITIES_VALUE_KEY);
+            ArrayList<String> keys = savedInstanceState.getStringArrayList(ALL_ENTITIES_KEY_KEY);
+            allEntities.clear();
+            for (int i=0; i<keys.size(); i++) {
+                allEntities.put(keys.get(i), entities.get(i));
+            }
+            showProfile();
+            if(isEditMode) {
+                switchEditMode(true);
+            } else {
+                switchEditMode(false);
+            }
 
+        } else {
+            refreshUI(false);
+        }
     }
 
     private void refreshUI(boolean saveAndRefresh) {
         invalidateOptionsMenu();
+        findViewById(R.id.full_content_layout).setVisibility(View.GONE);
+        findViewById(R.id.progress_layout).setVisibility(View.VISIBLE);
+        isLoading = true;
 
         if(saveAndRefresh) {
+            ((TextView) findViewById(R.id.loading_msg)).setText("Saving Data...");
             final List<MyResumeEntity> entities = new ArrayList<>();
             for(Map.Entry<String, MyResumeEntity> entry: allEntities.entrySet()) {
                 if(entry.getValue().getEntityType() == MyResumeEntity.PROFILE_TYPE) {
@@ -192,7 +210,6 @@ public class MainActivity extends AppCompatActivity{
                     entities.add(entry.getValue());
                 }
             }
-            isLoading = true;
             if(isPhotoChanged) {
                 FirebaseStorage storage = FirebaseStorage.getInstance();
                 final StorageReference storageRef = storage.getReference();
@@ -410,9 +427,6 @@ public class MainActivity extends AppCompatActivity{
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         switchEditMode(false);
-                        findViewById(R.id.full_content_layout).setVisibility(View.GONE);
-                        findViewById(R.id.progress_layout).setVisibility(View.VISIBLE);
-                        ((TextView) findViewById(R.id.loading_msg)).setText("Saving Data...");
                         refreshUI(true);
                         if(saveConfirmationDialog != null && saveConfirmationDialog.isShowing()) {
                             saveConfirmationDialog.dismiss();
@@ -501,8 +515,6 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 switchEditMode(false);
-                findViewById(R.id.full_content_layout).setVisibility(View.GONE);
-                findViewById(R.id.progress_layout).setVisibility(View.VISIBLE);
                 refreshUI(false);
                 if(cancelConfirmationDialog != null && cancelConfirmationDialog.isShowing()) {
                     cancelConfirmationDialog.dismiss();
@@ -528,12 +540,22 @@ public class MainActivity extends AppCompatActivity{
     @Override
     public void onBackPressed() {
         if(isLoading) {
-            //Do Nothing
+          //do nothing
         } else if(isEditMode) {
             showCancelDialog();
         } else {
             super.onBackPressed();
         }
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        isRunning = false;
+        if(isEditMode) {
+            refreshUI(false);
+        }
+        super.onDestroy();
     }
 
     private void changePageNumbers(boolean addedPage, int index) {
@@ -600,6 +622,7 @@ public class MainActivity extends AppCompatActivity{
     }
 
     private void setLongClickListenerOnTabs() {
+        viewPagerTab = (SmartTabLayout) findViewById(R.id.viewpagertab);
         LinearLayout tabStrip = (LinearLayout) viewPagerTab.getChildAt(0);
         for (int i = 0; i < tabStrip.getChildCount(); i++) {
             final TextView tab = (TextView) tabStrip.getChildAt(i);
@@ -614,6 +637,7 @@ public class MainActivity extends AppCompatActivity{
 
         EditText name_et = (EditText) findViewById(R.id.name_et);
         EditText title_et = (EditText) findViewById(R.id.title_et);
+        profileIV = (CircleImageView) findViewById(R.id.profile_image);
 
         if(isEditMode) {
 
@@ -623,9 +647,6 @@ public class MainActivity extends AppCompatActivity{
             title_et.setEnabled(true);
             profileIV.setClickable(true);
             getSupportActionBar().setTitle("Edit Mode");
-            mMenu.findItem(R.id.save).setVisible(true);
-            mMenu.findItem(R.id.cancel).setVisible(true);
-            mMenu.findItem(R.id.add_page).setVisible(true);
 
         } else {
 
@@ -635,16 +656,16 @@ public class MainActivity extends AppCompatActivity{
             title_et.setEnabled(false);
             profileIV.setClickable(false);
             getSupportActionBar().setTitle("My Resume");
-            mMenu.findItem(R.id.save).setVisible(false);
-            mMenu.findItem(R.id.cancel).setVisible(false);
-            mMenu.findItem(R.id.add_page).setVisible(false);
 
 
         }
 
+        invalidateOptionsMenu();
         setLongClickListenerOnTabs();
-        adapter.setIsEditMode(isEditMode);
-        adapter.notifyDataSetChanged();
+        if(adapter != null) {
+            adapter.setIsEditMode(isEditMode);
+            adapter.notifyDataSetChanged();
+        }
     }
 
 
@@ -656,21 +677,59 @@ public class MainActivity extends AppCompatActivity{
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-//        if(isLoading) {
-//            return false;
-//        }
+
+        if(isEditMode) {
+            menu.findItem(R.id.save).setVisible(true);
+            menu.findItem(R.id.cancel).setVisible(true);
+            menu.findItem(R.id.add_page).setVisible(true);
+            menu.findItem(R.id.sign_out).setVisible(false);
+            menu.findItem(R.id.upload_pdf).setVisible(false);
+            menu.findItem(R.id.edit).setVisible(false);
+        } else {
+            menu.findItem(R.id.save).setVisible(false);
+            menu.findItem(R.id.cancel).setVisible(false);
+            menu.findItem(R.id.add_page).setVisible(false);
+            menu.findItem(R.id.sign_out).setVisible(true);
+            menu.findItem(R.id.upload_pdf).setVisible(true);
+            menu.findItem(R.id.edit).setVisible(true);
+        }
+
+        if(isLoading) {
+            menu.findItem(R.id.edit).setVisible(false);
+            menu.findItem(R.id.upload_pdf).setVisible(false);
+            menu.findItem(R.id.download_pdf).setVisible(false);
+        } else {
+            if(!isEditMode) {
+                menu.findItem(R.id.upload_pdf).setVisible(true);
+                menu.findItem(R.id.edit).setVisible(true);
+            }
+            menu.findItem(R.id.download_pdf).setVisible(true);
+        }
+
+        if(!isMyProfile) {
+            menu.findItem(R.id.save).setVisible(false);
+            menu.findItem(R.id.cancel).setVisible(false);
+            menu.findItem(R.id.add_page).setVisible(false);
+            menu.findItem(R.id.sign_out).setVisible(false);
+            menu.findItem(R.id.upload_pdf).setVisible(false);
+            menu.findItem(R.id.edit).setVisible(false);
+            menu.findItem(R.id.download_pdf).setVisible(true);
+        }
         return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
-        if(isEditMode) {
-            switchEditMode(false);
-            findViewById(R.id.full_content_layout).setVisibility(View.GONE);
-            findViewById(R.id.progress_layout).setVisibility(View.VISIBLE);
-            refreshUI(false);
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putBoolean(IS_EDIT_MODE_KEY, isEditMode);
+        ArrayList<MyResumeEntity> entities = new ArrayList<>();
+        ArrayList<String> keys = new ArrayList<>();
+        for(Map.Entry<String, MyResumeEntity> entry: allEntities.entrySet()) {
+            keys.add(entry.getKey());
+            entities.add(entry.getValue());
         }
-        super.onSaveInstanceState(outState, outPersistentState);
+        outState.putParcelableArrayList(ALL_ENTITIES_VALUE_KEY, entities);
+        outState.putStringArrayList(ALL_ENTITIES_KEY_KEY, keys);
+        super.onSaveInstanceState(outState);
     }
 
     private void showProfile() {
@@ -687,8 +746,6 @@ public class MainActivity extends AppCompatActivity{
         title_et.setEnabled(false);
 
         profileIV = (CircleImageView) findViewById(R.id.profile_image);
-
-
         profileIV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -814,6 +871,8 @@ public class MainActivity extends AppCompatActivity{
         viewPagerTab = (SmartTabLayout) findViewById(R.id.viewpagertab);
         viewPagerTab.setViewPager(viewPager);
         setLongClickListenerOnTabs();
+
+        switchEditMode(false);
 
     }
 

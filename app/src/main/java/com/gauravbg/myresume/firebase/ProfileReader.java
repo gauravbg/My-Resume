@@ -1,10 +1,14 @@
 package com.gauravbg.myresume.firebase;
 
+import android.app.Activity;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.util.Log;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestBuilder;
+import com.gauravbg.myresume.MainActivity;
 import com.gauravbg.myresume.entities.Content;
 import com.gauravbg.myresume.entities.Link;
 import com.gauravbg.myresume.entities.MyResumeEntity;
@@ -113,12 +117,18 @@ public class ProfileReader {
     }
 
 
-    public void fetchImage(Context context, CircleImageView profileIV, String url) {
+    public void fetchImage(MainActivity activity, CircleImageView profileIV, String url) {
 
+        RequestBuilder<Drawable> loadedDrawable = null;
         if(url != null) {
             profileIV.setTag(null);
-            Glide.with(context).load(url).into(profileIV);
-            profileIV.setTag(null);
+            if(activity.isRunning) {
+                loadedDrawable = Glide.with(activity).load(url);
+            }
+            if(activity.isRunning && loadedDrawable != null) {
+                loadedDrawable.into(profileIV);
+                profileIV.setTag(null);
+            }
         }
     }
 
@@ -160,7 +170,12 @@ public class ProfileReader {
                 if(child.getKey().equals("pages")) {
                     //do nothing
                 } else if(child.getKey().equals("links")) {
-                    profile.setLinks((List<Link>) child.getValue());
+                    List<Link> links = new ArrayList<>();
+                    for (DataSnapshot linkItem: child.getChildren()) {
+                        Link link = linkItem.getValue(Link.class);
+                        links.add(link);
+                    }
+                    profile.setLinks(links);
                 } else {
                     String value = (String)child.getValue();
                     switch(child.getKey()) {

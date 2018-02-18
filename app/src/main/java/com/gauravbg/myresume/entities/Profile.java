@@ -10,7 +10,7 @@ import java.util.List;
  * Created by gauravbg on 8/6/17.
  */
 
-public class Profile implements MyResumeEntity, Parcelable {
+public class Profile implements MyResumeEntity {
 
 
     public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {

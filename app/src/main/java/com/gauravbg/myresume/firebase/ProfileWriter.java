@@ -90,6 +90,8 @@ public class ProfileWriter {
                 Page page = (Page) entity;
                 if(page.isContactPage()) {
                     Section defaultSection = page.getSections().get(0);
+                    profile.getLinks().clear();
+                    List<Link> links = new ArrayList<>();
                     for(Content content: defaultSection.getContents()) {
                         if(content.getValue().equals("Email")) {
                             this.profile.setEmail(content.getValue2());
@@ -99,16 +101,14 @@ public class ProfileWriter {
                             this.profile.setPhoneNumber(content.getValue2());
                         }
 
-                        profile.getLinks().clear();
-                        List<Link> links = new ArrayList<>();
                         if(content.getType() == Content.ContentType.ADDITIONAL_CONTACT_TYPE) {
                             Link link = new Link();
                             link.setName(content.getValue());
                             link.setUrl(content.getValue2());
                             links.add(link);
                         }
-                        profile.setLinks(links);
                     }
+                    profile.setLinks(links);
                 }
                 pagesRef.push().setValue(entity, completionListener);
             }

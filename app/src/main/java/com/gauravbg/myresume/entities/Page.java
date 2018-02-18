@@ -10,7 +10,7 @@ import java.util.List;
  * Created by gauravbg on 8/22/17.
  */
 
-public class Page implements MyResumeEntity, Parcelable{
+public class Page implements MyResumeEntity {
 
     private String id;
     private String title;

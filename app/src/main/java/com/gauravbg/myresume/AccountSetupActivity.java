@@ -93,6 +93,8 @@ public class AccountSetupActivity extends AppCompatActivity implements GoogleApi
     private AlertDialog photoPickerDialog;
     private AlertDialog cancelConfirmDialog;
 
+    private boolean isAccountSetup;
+
 
     private ProfileWriter profileWriter = new ProfileWriter(new ProfileWriter.EntitySaveListener() {
 
@@ -104,6 +106,7 @@ public class AccountSetupActivity extends AppCompatActivity implements GoogleApi
             Intent intent = new Intent(AccountSetupActivity.this, MainActivity.class);
             intent.putExtra(MainActivity.UID, databaseReference.getKey());
             intent.putExtra(MainActivity.IS_MY_PROFILE, true);
+            isAccountSetup = true;
             AccountSetupActivity.this.startActivity(intent);
             AccountSetupActivity.this.finish();
         }
@@ -197,6 +200,7 @@ public class AccountSetupActivity extends AppCompatActivity implements GoogleApi
         }
 
     }
+
 
     private void showNewUserUI(final FirebaseUser user) {
         findViewById(R.id.pre_login_layout).setVisibility(View.GONE);

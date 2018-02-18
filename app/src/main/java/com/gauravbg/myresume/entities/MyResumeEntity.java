@@ -1,10 +1,12 @@
 package com.gauravbg.myresume.entities;
 
+import android.os.Parcelable;
+
 /**
  * Created by gauravbg on 10/2/17.
  */
 
-public interface MyResumeEntity {
+public interface MyResumeEntity extends Parcelable{
 
 
     String PROFILE_TYPE = "profile_type";

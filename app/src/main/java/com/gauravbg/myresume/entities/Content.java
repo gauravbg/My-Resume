@@ -7,7 +7,7 @@ import android.os.Parcelable;
  * Created by gauravbg on 8/22/17.
  */
 
-public class Content implements MyResumeEntity, Parcelable{
+public class Content implements MyResumeEntity {
 
     private String id;
     private String value;

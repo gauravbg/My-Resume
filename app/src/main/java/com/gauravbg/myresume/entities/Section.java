@@ -9,7 +9,7 @@ import java.util.List;
  * Created by gauravbg on 8/22/17.
  */
 
-public class Section implements MyResumeEntity, Parcelable{
+public class Section implements MyResumeEntity {
 
 
     private String id;
